@@ -1,0 +1,43 @@
+{
+  "name": "axiom-ui",
+  "version": "1.0.0",
+  "description": "Universal Zero-Hallucination Desktop Automation Engine & MCP Plugin for AI Agents",
+  "main": "server.mjs",
+  "type": "module",
+  "bin": {
+    "axiomui": "./axiomui"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "stdio": "node mcp-stdio.mjs",
+    "up": "./axiomui up",
+    "down": "./axiomui down",
+    "status": "./axiomui status",
+    "doctor": "./axiomui doctor",
+    "test": "node mcp-stdio.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "desktop-automation",
+    "accessibility",
+    "at-spi2",
+    "wayland",
+    "gnome",
+    "ocr",
+    "svg-parser",
+    "tesseract-avx2",
+    "zero-hallucination",
+    "computer-use"
+  ],
+  "author": "qira-dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qira-dev/AxiomUI.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

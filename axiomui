@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SOURCE="${BASH_SOURCE[0]}"
+while [[ -L "${SOURCE}" ]]; do
+    DIR="$(cd -P "$(dirname "${SOURCE}")" && pwd)"
+    SOURCE="$(readlink "${SOURCE}")"
+    [[ "${SOURCE}" != /* ]] && SOURCE="${DIR}/${SOURCE}"
+done
+SCRIPT_DIR="$(cd -P "$(dirname "${SOURCE}")" && pwd)"
+ROOT_DIR="${AXIOM_UI_ROOT:-${SCRIPT_DIR}}"
+PID_FILE="${ROOT_DIR}/data/server.pid"
+LOG_FILE="${ROOT_DIR}/logs/server.log"
+PORT="${AXIOM_UI_PORT:-${DESKTOP_UI_MCP_PORT:-39200}}"
+HOST="${AXIOM_UI_HOST:-${DESKTOP_UI_MCP_HOST:-127.0.0.1}}"
+TESSDATA_DIR="${ROOT_DIR}/native_ocr/root/usr/share/tesseract-ocr/5/tessdata"
+
+export AXIOM_UI_ROOT="${ROOT_DIR}"
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=${XDG_RUNTIME_DIR}/bus}"
+export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-0}"
+export DISPLAY="${DISPLAY:-:0}"
+export PATH="${ROOT_DIR}/runtime/node/bin:${ROOT_DIR}/bin:${HOME}/.local/bin:${PATH}"
+
+mkdir -p "${ROOT_DIR}/data" "${ROOT_DIR}/logs" "${TESSDATA_DIR}"
+
+is_running() {
+    if [[ -f "${PID_FILE}" ]]; then
+        local pid
+        pid="$(cat "${PID_FILE}" 2>/dev/null || true)"
+        if [[ -n "${pid}" ]] && kill -0 "${pid}" 2>/dev/null; then
+            return 0
+        fi
+    fi
+    local active_pid
+    active_pid="$(ss -tlpn "sport = :${PORT}" 2>/dev/null | grep -o 'pid=[0-9]*' | head -n1 | cut -d= -f2 || true)"
+    if [[ -n "${active_pid}" ]] && kill -0 "${active_pid}" 2>/dev/null; then
+        echo "${active_pid}" > "${PID_FILE}"
+        return 0
+    fi
+    return 1
+}
+
+cmd_up() {
+    if is_running; then
+        echo "[AxiomUI] Already running (PID $(cat "${PID_FILE}")) on http://${HOST}:${PORT}/mcp"
+        return 0
+    fi
+    gsettings set org.gnome.desktop.interface toolkit-accessibility true 2>/dev/null || true
+    setsid node "${ROOT_DIR}/server.mjs" >> "${LOG_FILE}" 2>&1 < /dev/null &
+    local pid=$!
+    disown "${pid}" 2>/dev/null || true
+    echo "${pid}" > "${PID_FILE}"
+    sleep 1
+    if kill -0 "${pid}" 2>/dev/null; then
+        echo "[AxiomUI] Started successfully (PID ${pid})"
+        echo "  • Streamable HTTP MCP : http://${HOST}:${PORT}/mcp"
+        echo "  • SSE MCP Endpoint    : http://${HOST}:${PORT}/sse"
+        echo "  • Health & Tools List : http://${HOST}:${PORT}/health"
+        echo "  • Stdio Entrypoint    : node ${ROOT_DIR}/mcp-stdio.mjs"
+    else
+        echo "[AxiomUI] Failed to start. Check ${LOG_FILE}"
+        exit 1
+    fi
+}
+
+cmd_down() {
+    if is_running; then
+        local pid
+        pid="$(cat "${PID_FILE}")"
+        kill "${pid}" 2>/dev/null || true
+        rm -f "${PID_FILE}"
+        echo "[AxiomUI] Stopped (PID ${pid})"
+    else
+        rm -f "${PID_FILE}"
+        echo "[AxiomUI] Not running"
+    fi
+}
+
+cmd_status() {
+    if is_running; then
+        local pid
+        pid="$(cat "${PID_FILE}")"
+        echo "[AxiomUI] RUNNING (PID ${pid}) on port ${PORT}"
+        ps -p "${pid}" -o pid,rss,pcpu,etime,cmd || true
+    else
+        echo "[AxiomUI] STOPPED"
+    fi
+}
+
+cmd_doctor() {
+    "${ROOT_DIR}/bin/computer-use-linux" doctor
+}
+
+cmd_lang() {
+    local subcmd="${1:-list}"
+    shift || true
+    case "${subcmd}" in
+        list)
+            echo "[AxiomUI] Installed OCR Languages in ${TESSDATA_DIR}:"
+            for f in "${TESSDATA_DIR}"/*.traineddata; do
+                if [[ -f "${f}" ]]; then
+                    local base
+                    base="$(basename "${f}" .traineddata)"
+                    local sz
+                    sz="$(du -h "${f}" | cut -f1)"
+                    echo "  • ${base} (${sz})"
+                fi
+            done
+            ;;
+        add)
+            local lang="${1:-}"
+            if [[ -z "${lang}" ]]; then
+                echo "Usage: axiomui lang add <language_code|all> (e.g. ben, jpn, fra, spa, hin, ara, deu, chi_sim)"
+                exit 1
+            fi
+            echo "[AxiomUI] Fetching language '${lang}' on-demand from official fast quantized registry..."
+            ROOT_DIR="${ROOT_DIR}" node -e '
+              import(process.env.ROOT_DIR + "/lib/bridge.mjs").then(async (m) => {
+                const b = new m.CulMcpBridge();
+                const res = await b.callTool("ensure_language", { language: process.argv[1] });
+                console.log(res.content[0].text);
+              });
+            ' "${lang}"
+            ;;
+        *)
+            echo "Usage: axiomui lang {list|add <lang_code|all>}"
+            exit 1
+            ;;
+    esac
+}
+
+case "${1:-status}" in
+    up|start)
+        cmd_up
+        ;;
+    down|stop)
+        cmd_down
+        ;;
+    restart)
+        cmd_down
+        sleep 1
+        cmd_up
+        ;;
+    status)
+        cmd_status
+        ;;
+    doctor)
+        cmd_doctor
+        ;;
+    logs)
+        tail -n 50 "${LOG_FILE}"
+        ;;
+    lang)
+        shift
+        cmd_lang "$@"
+        ;;
+    *)
+        echo "Usage: axiomui {up|down|restart|status|doctor|logs|lang}"
+        exit 1
+        ;;
+esac

@@ -1,0 +1,34 @@
+name: AxiomUI CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  validate:
+    name: Syntax & Cargo Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate JavaScript Syntax
+        run: |
+          node --check server.mjs
+          node --check mcp-stdio.mjs
+          node --check lib/bridge.mjs
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Verify desktop-vision-rs Rust Crate
+        run: |
+          cd src/desktop-vision-rs
+          cargo check --verbose
