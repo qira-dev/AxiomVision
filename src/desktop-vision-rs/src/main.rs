@@ -10,7 +10,7 @@ use std::process::{Command, Stdio};
 use std::thread;
 
 fn resolve_ocr_paths() -> (String, String, String, String) {
-    let root = env::var("AXIOM_VISION_ROOT")
+    let root = env::var("AXIOM_UI_ROOT")
         .ok()
         .filter(|v| !v.trim().is_empty())
         .or_else(|| {
@@ -69,7 +69,6 @@ pub struct OcrBlock {
     pub confidence: f64,
     pub bbox: BBox,
     pub center: Point,
-    pub engine: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -958,7 +957,7 @@ fn run_tesseract_tsv_region(
         }
         let word = parts[11].trim();
         let conf = parts[10].parse::<f64>().unwrap_or(-1.0);
-        if word.is_empty() || conf < 18.0 {
+        if word.is_empty() || conf < 28.0 {
             continue;
         }
         let block_num = parts[2].parse::<i32>().unwrap_or(0);
@@ -990,13 +989,28 @@ fn run_tesseract_tsv_region(
     }
 
     let mut blocks = Vec::new();
-    for (_key, (words, confs, x1, y1, x2, y2)) in lines_map {
+    for (_key, (mut words, mut confs, x1, y1, x2, y2)) in lines_map {
+        // Strip leading low-confidence icon-glyph noise (e.g. "sa", "89", "f" misread from a 16px sidebar icon)
+        if words.len() >= 2 && confs[0] < 46.0 && confs[1] >= 65.0 && words[0].chars().count() <= 3 {
+            words.remove(0);
+            confs.remove(0);
+        }
         let joined = normalize_ocr_line(&words.join(" "));
-        let alnum_count = joined.chars().filter(|c| c.is_alphanumeric() || is_bengali_letter(*c)).count();
+        let alnum_chars: Vec<char> = joined.chars().filter(|c| c.is_alphanumeric() || is_bengali_letter(*c)).collect();
+        let alnum_count = alnum_chars.len();
         if alnum_count == 0 {
             continue;
         }
         let avg_conf = (confs.iter().sum::<f64>() / (confs.len() as f64) / 100.0).clamp(0.01, 0.9999);
+
+        // Filter out low-confidence icon/border garbage (e.g. "RRR", "eee", "kn" with conf < 0.42)
+        if avg_conf < 0.42 {
+            let all_same = alnum_chars.len() >= 2 && alnum_chars.iter().all(|&c| c.eq_ignore_ascii_case(&alnum_chars[0]));
+            if all_same || alnum_count <= 2 {
+                continue;
+            }
+        }
+
         let bw = (x2 - x1).max(1);
         let bh = (y2 - y1).max(1);
         blocks.push(OcrBlock {
@@ -1005,7 +1019,6 @@ fn run_tesseract_tsv_region(
             confidence: (avg_conf * 10000.0).round() / 10000.0,
             bbox: BBox { x: x1, y: y1, width: bw, height: bh, x2, y2 },
             center: Point { x: x1 + bw / 2, y: y1 + bh / 2 },
-            engine: "rust_tesseract_avx2".to_string(),
         });
     }
     blocks
