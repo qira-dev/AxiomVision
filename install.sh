@@ -27,7 +27,7 @@ if [[ "${ARCH}" != "x86_64" ]]; then
     echo -e "${YELLOW}[!] Warning: System architecture is ${ARCH}. Pre-built binaries target x86_64.${NC}"
 fi
 
-INSTALL_DIR="${HOME}/.local/share/axiom-ui"
+INSTALL_DIR="${HOME}/.local/share/axiom-vision"
 BIN_DIR="${HOME}/.local/bin"
 EXT_DIR="${HOME}/.local/share/gnome-shell/extensions/computer-use-linux@avifenesh.dev"
 
@@ -35,7 +35,7 @@ mkdir -p "${INSTALL_DIR}" "${BIN_DIR}" "${HOME}/.local/share/gnome-shell/extensi
 
 # Check if running locally inside the repo
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || echo "")"
-if [[ -n "${SCRIPT_DIR}" && -f "${SCRIPT_DIR}/server.mjs" && -f "${SCRIPT_DIR}/axiomui" ]]; then
+if [[ -n "${SCRIPT_DIR}" && -f "${SCRIPT_DIR}/server.mjs" && -f "${SCRIPT_DIR}/axiomvision" ]]; then
     echo -e "${BLUE}[*] Installing from local source: ${SCRIPT_DIR}...${NC}"
     TARGET_DIR="${SCRIPT_DIR}"
 else
@@ -60,10 +60,10 @@ fi
 if [[ "${NEED_NODE}" -eq 1 && ! -x "${TARGET_DIR}/runtime/node/bin/node" ]]; then
     echo -e "${BLUE}[*] Bundling self-contained portable Node.js v22 runtime (zero sudo required)...${NC}"
     mkdir -p "${TARGET_DIR}/runtime"
-    NODE_TAR="/tmp/axiomui-node-v22.tar.xz"
+    NODE_TAR="/tmp/axiomvision-node-v22.tar.xz"
     python3 -c '
 import urllib.request
-urllib.request.urlretrieve("https://nodejs.org/dist/v22.14.0/node-v22.14.0-linux-x64.tar.xz", "/tmp/axiomui-node-v22.tar.xz")
+urllib.request.urlretrieve("https://nodejs.org/dist/v22.14.0/node-v22.14.0-linux-x64.tar.xz", "/tmp/axiomvision-node-v22.tar.xz")
 '
     tar -xJf "${NODE_TAR}" -C "${TARGET_DIR}/runtime"
     mv "${TARGET_DIR}/runtime/node-v22.14.0-linux-x64" "${TARGET_DIR}/runtime/node"
@@ -84,10 +84,10 @@ fi
 echo -e "${BLUE}[*] Enabling GNOME toolkit-accessibility...${NC}"
 gsettings set org.gnome.desktop.interface toolkit-accessibility true 2>/dev/null || true
 
-# 4. Symlink executable to ~/.local/bin/axiomui
-chmod +x "${TARGET_DIR}/axiomui" "${TARGET_DIR}/server.mjs" "${TARGET_DIR}/mcp-stdio.mjs" \
+# 4. Symlink executable to ~/.local/bin/axiomvision
+chmod +x "${TARGET_DIR}/axiomvision" "${TARGET_DIR}/server.mjs" "${TARGET_DIR}/mcp-stdio.mjs" \
          "${TARGET_DIR}/bin/"* "${TARGET_DIR}/native_ocr/root/usr/bin/"*
-ln -sf "${TARGET_DIR}/axiomui" "${BIN_DIR}/axiomui"
+ln -sf "${TARGET_DIR}/axiomvision" "${BIN_DIR}/axiomvision"
 
 # Ensure ~/.local/bin is in PATH
 if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
@@ -100,14 +100,14 @@ fi
 
 # 5. Start AxiomVision Daemon & Run Diagnostics
 echo -e "${BLUE}[*] Starting AxiomVision background service...${NC}"
-"${TARGET_DIR}/axiomui" restart
+"${TARGET_DIR}/axiomvision" restart
 
 echo -e "\n${BOLD}${GREEN}✔ AxiomVision successfully installed and running on port 39200!${NC}\n"
 echo -e "Commands:"
-echo -e "  • Check status : ${BOLD}axiomui status${NC}"
-echo -e "  • View logs    : ${BOLD}axiomui logs${NC}"
-echo -e "  • Stop daemon  : ${BOLD}axiomui stop${NC}"
-echo -e "  • Add language : ${BOLD}axiomui lang add <lang_code>${NC} (123 languages: ben, jpn, fra, spa, hin, ara, etc.)"
+echo -e "  • Check status : ${BOLD}axiomvision status${NC}"
+echo -e "  • View logs    : ${BOLD}axiomvision logs${NC}"
+echo -e "  • Stop daemon  : ${BOLD}axiomvision stop${NC}"
+echo -e "  • Add language : ${BOLD}axiomvision lang add <lang_code>${NC} (123 languages: ben, jpn, fra, spa, hin, ara, etc.)"
 echo -e ""
 echo -e "Configure your IDE or Agent:"
 echo -e "  • Streamable HTTP : ${BOLD}http://127.0.0.1:39200/mcp${NC}"

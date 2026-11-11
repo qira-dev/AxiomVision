@@ -5,15 +5,15 @@
   "main": "server.mjs",
   "type": "module",
   "bin": {
-    "axiomui": "./axiomui"
+    "axiomvision": "./axiomvision"
   },
   "scripts": {
     "start": "node server.mjs",
     "stdio": "node mcp-stdio.mjs",
-    "up": "./axiomui up",
-    "down": "./axiomui down",
-    "status": "./axiomui status",
-    "doctor": "./axiomui doctor",
+    "up": "./axiomvision up",
+    "down": "./axiomvision down",
+    "status": "./axiomvision status",
+    "doctor": "./axiomvision doctor",
     "test": "node mcp-stdio.mjs"
   },
   "keywords": [

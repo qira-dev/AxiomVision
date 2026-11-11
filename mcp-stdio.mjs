@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * AxiomUI Stdio Transport Entrypoint (Singleton Daemon Proxy)
+ * AxiomVision Stdio Transport Entrypoint (Singleton Daemon Proxy)
  * Routes all stdio MCP requests through the persistent singleton HTTP daemon
  * on http://127.0.0.1:39200/mcp so multiple IDE agents/sub-agents share a single
  * Wayland portal session, OCR concurrency queue, and in-memory cache (zero duplicate
@@ -13,9 +13,9 @@ import { CulMcpBridge } from './lib/bridge.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const ROOT_DIR = process.env.AXIOM_UI_ROOT || __dirname;
-const PORT = Number(process.env.AXIOM_UI_PORT || process.env.DESKTOP_UI_MCP_PORT) || 39200;
-const HOST = process.env.AXIOM_UI_HOST || process.env.DESKTOP_UI_MCP_HOST || '127.0.0.1';
+const ROOT_DIR = process.env.AXIOM_VISION_ROOT || __dirname;
+const PORT = Number(process.env.AXIOM_VISION_PORT || process.env.DESKTOP_UI_MCP_PORT) || 39200;
+const HOST = process.env.AXIOM_VISION_HOST || process.env.DESKTOP_UI_MCP_HOST || '127.0.0.1';
 const DAEMON_URL = `http://${HOST}:${PORT}/mcp`;
 
 let fallbackBridge = null;
@@ -38,7 +38,7 @@ async function ensureDaemonStarted() {
   if (ensureDaemonPromise) return ensureDaemonPromise;
 
   ensureDaemonPromise = new Promise((resolve) => {
-    execFile(path.join(ROOT_DIR, 'axiomui'), ['up'], { timeout: 5000 }, async () => {
+    execFile(path.join(ROOT_DIR, 'axiomvision'), ['up'], { timeout: 5000 }, async () => {
       const ok = await isDaemonUp();
       ensureDaemonPromise = null;
       resolve(ok);

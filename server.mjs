@@ -8,8 +8,8 @@ import { URL } from 'node:url';
 import crypto from 'node:crypto';
 import { CulMcpBridge } from './lib/bridge.mjs';
 
-const PORT = Number(process.env.AXIOM_UI_PORT || process.env.DESKTOP_UI_MCP_PORT) || 39200;
-const HOST = process.env.AXIOM_UI_HOST || process.env.DESKTOP_UI_MCP_HOST || '127.0.0.1';
+const PORT = Number(process.env.AXIOM_VISION_PORT || process.env.DESKTOP_UI_MCP_PORT) || 39200;
+const HOST = process.env.AXIOM_VISION_HOST || process.env.DESKTOP_UI_MCP_HOST || '127.0.0.1';
 
 const bridge = new CulMcpBridge();
 const sseSessions = new Map();
@@ -133,7 +133,7 @@ const server = http.createServer(async (req, res) => {
           res.writeHead(202, corsHeaders());
           return res.end();
         }
-        const sid = req.headers['mcp-session-id'] || 's_axiom_ui';
+        const sid = req.headers['mcp-session-id'] || 's_axiom_vision';
         const proto = req.headers['mcp-protocol-version'] || '2024-11-05';
         return sendJson(res, 200, reply, {
           'Mcp-Session-Id': sid,

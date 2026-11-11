@@ -10,7 +10,7 @@ use std::process::{Command, Stdio};
 use std::thread;
 
 fn resolve_ocr_paths() -> (String, String, String, String) {
-    let root = env::var("AXIOM_UI_ROOT")
+    let root = env::var("AXIOM_VISION_ROOT")
         .ok()
         .filter(|v| !v.trim().is_empty())
         .or_else(|| {

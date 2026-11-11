@@ -86,12 +86,12 @@ curl -fsSL https://raw.githubusercontent.com/qira-dev/AxiomVision/main/install.s
 ## CLI Usage
 
 ```bash
-axiomui up                     # Start background daemon on port 39200
-axiomui status                 # Check daemon PID, CPU, and RSS memory
-axiomui doctor                 # Run Wayland, Portal, and AT-SPI2 diagnostics
-axiomui logs                   # Inspect daemon logs
-axiomui stop                   # Stop background daemon
-axiomui restart                # Restart daemon
+axiomvision up                     # Start background daemon on port 39200
+axiomvision status                 # Check daemon PID, CPU, and RSS memory
+axiomvision doctor                 # Run Wayland, Portal, and AT-SPI2 diagnostics
+axiomvision logs                   # Inspect daemon logs
+axiomvision stop                   # Stop background daemon
+axiomvision restart                # Restart daemon
 ```
 
 ### Just-In-Time Language Provisioning (123+ Languages)
@@ -99,10 +99,10 @@ axiomui restart                # Restart daemon
 By default, only English (`eng`) is pre-installed to keep the repository lightweight (~40 MB). Any of the 123+ quantized language models can be fetched on demand in under 1 second via CLI or MCP (`ensure_language`):
 
 ```bash
-axiomui lang list              # List installed OCR language models
-axiomui lang add ben           # Install Bengali model (~855 KB)
-axiomui lang add jpn           # Install Japanese model (~2.4 MB)
-axiomui lang add all           # Install all 123 language models
+axiomvision lang list              # List installed OCR language models
+axiomvision lang add ben           # Install Bengali model (~855 KB)
+axiomvision lang add jpn           # Install Japanese model (~2.4 MB)
+axiomvision lang add all           # Install all 123 language models
 ```
 
 ---
@@ -116,7 +116,7 @@ axiomui lang add all           # Install all 123 language models
   "mcpServers": {
     "axiom-vision": {
       "command": "node",
-      "args": ["~/.local/share/axiom-ui/mcp-stdio.mjs"]
+      "args": ["~/.local/share/axiom-vision/mcp-stdio.mjs"]
     }
   }
 }

@@ -8,14 +8,14 @@ while [[ -L "${SOURCE}" ]]; do
     [[ "${SOURCE}" != /* ]] && SOURCE="${DIR}/${SOURCE}"
 done
 SCRIPT_DIR="$(cd -P "$(dirname "${SOURCE}")" && pwd)"
-ROOT_DIR="${AXIOM_UI_ROOT:-${SCRIPT_DIR}}"
+ROOT_DIR="${AXIOM_VISION_ROOT:-${SCRIPT_DIR}}"
 PID_FILE="${ROOT_DIR}/data/server.pid"
 LOG_FILE="${ROOT_DIR}/logs/server.log"
-PORT="${AXIOM_UI_PORT:-${DESKTOP_UI_MCP_PORT:-39200}}"
-HOST="${AXIOM_UI_HOST:-${DESKTOP_UI_MCP_HOST:-127.0.0.1}}"
+PORT="${AXIOM_VISION_PORT:-${DESKTOP_UI_MCP_PORT:-39200}}"
+HOST="${AXIOM_VISION_HOST:-${DESKTOP_UI_MCP_HOST:-127.0.0.1}}"
 TESSDATA_DIR="${ROOT_DIR}/native_ocr/root/usr/share/tesseract-ocr/5/tessdata"
 
-export AXIOM_UI_ROOT="${ROOT_DIR}"
+export AXIOM_VISION_ROOT="${ROOT_DIR}"
 export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=${XDG_RUNTIME_DIR}/bus}"
 export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-0}"
@@ -43,7 +43,7 @@ is_running() {
 
 cmd_up() {
     if is_running; then
-        echo "[AxiomUI] Already running (PID $(cat "${PID_FILE}")) on http://${HOST}:${PORT}/mcp"
+        echo "[AxiomVision] Already running (PID $(cat "${PID_FILE}")) on http://${HOST}:${PORT}/mcp"
         return 0
     fi
     gsettings set org.gnome.desktop.interface toolkit-accessibility true 2>/dev/null || true
@@ -53,13 +53,13 @@ cmd_up() {
     echo "${pid}" > "${PID_FILE}"
     sleep 1
     if kill -0 "${pid}" 2>/dev/null; then
-        echo "[AxiomUI] Started successfully (PID ${pid})"
+        echo "[AxiomVision] Started successfully (PID ${pid})"
         echo "  • Streamable HTTP MCP : http://${HOST}:${PORT}/mcp"
         echo "  • SSE MCP Endpoint    : http://${HOST}:${PORT}/sse"
         echo "  • Health & Tools List : http://${HOST}:${PORT}/health"
         echo "  • Stdio Entrypoint    : node ${ROOT_DIR}/mcp-stdio.mjs"
     else
-        echo "[AxiomUI] Failed to start. Check ${LOG_FILE}"
+        echo "[AxiomVision] Failed to start. Check ${LOG_FILE}"
         exit 1
     fi
 }
@@ -70,10 +70,10 @@ cmd_down() {
         pid="$(cat "${PID_FILE}")"
         kill "${pid}" 2>/dev/null || true
         rm -f "${PID_FILE}"
-        echo "[AxiomUI] Stopped (PID ${pid})"
+        echo "[AxiomVision] Stopped (PID ${pid})"
     else
         rm -f "${PID_FILE}"
-        echo "[AxiomUI] Not running"
+        echo "[AxiomVision] Not running"
     fi
 }
 
@@ -81,10 +81,10 @@ cmd_status() {
     if is_running; then
         local pid
         pid="$(cat "${PID_FILE}")"
-        echo "[AxiomUI] RUNNING (PID ${pid}) on port ${PORT}"
+        echo "[AxiomVision] RUNNING (PID ${pid}) on port ${PORT}"
         ps -p "${pid}" -o pid,rss,pcpu,etime,cmd || true
     else
-        echo "[AxiomUI] STOPPED"
+        echo "[AxiomVision] STOPPED"
     fi
 }
 
@@ -97,7 +97,7 @@ cmd_lang() {
     shift || true
     case "${subcmd}" in
         list)
-            echo "[AxiomUI] Installed OCR Languages in ${TESSDATA_DIR}:"
+            echo "[AxiomVision] Installed OCR Languages in ${TESSDATA_DIR}:"
             for f in "${TESSDATA_DIR}"/*.traineddata; do
                 if [[ -f "${f}" ]]; then
                     local base
@@ -111,10 +111,10 @@ cmd_lang() {
         add)
             local lang="${1:-}"
             if [[ -z "${lang}" ]]; then
-                echo "Usage: axiomui lang add <language_code|all> (e.g. ben, jpn, fra, spa, hin, ara, deu, chi_sim)"
+                echo "Usage: axiomvision lang add <language_code|all> (e.g. ben, jpn, fra, spa, hin, ara, deu, chi_sim)"
                 exit 1
             fi
-            echo "[AxiomUI] Fetching language '${lang}' on-demand from official fast quantized registry..."
+            echo "[AxiomVision] Fetching language '${lang}' on-demand from official fast quantized registry..."
             ROOT_DIR="${ROOT_DIR}" node -e '
               import(process.env.ROOT_DIR + "/lib/bridge.mjs").then(async (m) => {
                 const b = new m.CulMcpBridge();
@@ -124,7 +124,7 @@ cmd_lang() {
             ' "${lang}"
             ;;
         *)
-            echo "Usage: axiomui lang {list|add <lang_code|all>}"
+            echo "Usage: axiomvision lang {list|add <lang_code|all>}"
             exit 1
             ;;
     esac
@@ -156,7 +156,7 @@ case "${1:-status}" in
         cmd_lang "$@"
         ;;
     *)
-        echo "Usage: axiomui {up|down|restart|status|doctor|logs|lang}"
+        echo "Usage: axiomvision {up|down|restart|status|doctor|logs|lang}"
         exit 1
         ;;
 esac

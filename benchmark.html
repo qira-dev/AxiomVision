@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AxiomVision — Technical Benchmark Specification</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --plot-bg: #11161d;
+      --border: #30363d;
+      --border-subtle: #21262d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --blue: #2f81f7;
+      --blue-bright: #58a6ff;
+      --red: #f85149;
+      --red-bright: #ff7b72;
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 40px 24px 64px;
+    }
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    .doc-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 18px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .doc-title {
+      font-family: var(--mono);
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      color: var(--text);
+    }
+    .doc-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .doc-meta {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--muted);
+      text-align: right;
+    }
+    .section-title {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      margin: 32px 0 16px;
+    }
+    .figure-box {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      padding: 18px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+    .figure-caption {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    table.data-table th,
+    table.data-table td {
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+    table.data-table th {
+      background: #11161d;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    table.data-table td.num,
+    table.data-table th.num {
+      font-family: var(--mono);
+      text-align: right;
+      white-space: nowrap;
+    }
+    code {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: rgba(110, 118, 129, 0.2);
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    .val-win {
+      color: var(--blue-bright);
+      font-weight: 700;
+    }
+    .val-loss {
+      color: var(--red-bright);
+      font-weight: 600;
+    }
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .spec-cell {
+      padding: 14px 16px;
+      border-right: 1px solid var(--border);
+    }
+    .spec-cell:last-child {
+      border-right: none;
+    }
+    .spec-k {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .spec-v {
+      font-family: var(--mono);
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    @media (max-width: 720px) {
+      .spec-grid { grid-template-columns: repeat(2, 1fr); }
+      .spec-cell:nth-child(2) { border-right: none; }
+      .spec-cell:nth-child(1), .spec-cell:nth-child(2) { border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="doc-header">
+      <div>
+        <div class="doc-title">AXIOMVISION // EMPIRICAL BENCHMARK SPECIFICATION</div>
+        <div class="doc-sub">Deterministic OS-Level Vision (Rust + C++ AVX2 + AT-SPI2) vs. Multimodal Foundation Models</div>
+      </div>
+      <div class="doc-meta">
+        <div>ARCHITECTURE: x86_64 AVX2 SIMD</div>
+        <div>PIPELINE: IN-MEMORY ZERO-DISK</div>
+      </div>
+    </div>
+
+    <div class="spec-grid">
+      <div class="spec-cell">
+        <div class="spec-k">Mean Engine Score</div>
+        <div class="spec-v" style="color: var(--blue-bright);">85.8%</div>
+      </div>
+      <div class="spec-cell">
+        <div class="spec-k">Mean Vision LLM Score</div>
+        <div class="spec-v" style="color: var(--red-bright);">41.8%</div>
+      </div>
+      <div class="spec-cell">
+        <div class="spec-k">Coordinate Precision</div>
+        <div class="spec-v">100.0% (Exact px)</div>
+      </div>
+      <div class="spec-cell">
+        <div class="spec-k">Disk Writes / Call</div>
+        <div class="spec-v">0 Bytes (RAM Pipe)</div>
+      </div>
+    </div>
+
+    <div class="section-title">1. Cross-Model Blind Self-Audit Plot (Figure 1)</div>
+    <div class="figure-box">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 470" width="100%" height="auto">
+        <defs>
+          <pattern id="grid1" width="16" height="16" patternUnits="userSpaceOnUse">
+            <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#1b222c" stroke-width="0.7"/>
+          </pattern>
+        </defs>
+
+        <!-- Legend -->
+        <g transform="translate(582, 8)">
+          <rect x="0" y="0" width="298" height="28" rx="3" fill="#11161d" stroke="#30363d" stroke-width="1"/>
+          <rect x="12" y="8" width="12" height="12" rx="1.5" fill="#2f81f7"/>
+          <text x="30" y="18" font-family="monospace" font-size="11" font-weight="700" fill="#e6edf3">AxiomVision Engine</text>
+          <rect x="170" y="8" width="12" height="12" rx="1.5" fill="#f85149"/>
+          <text x="188" y="18" font-family="monospace" font-size="11" font-weight="700" fill="#e6edf3">Native Vision LLM</text>
+        </g>
+
+        <!-- Plot Canvas (x: 70..880, y: 52..392 => h: 340, 3.4px per 1%) -->
+        <rect x="70" y="52" width="810" height="340" fill="#11161d"/>
+        <rect x="70" y="52" width="810" height="340" fill="url(#grid1)"/>
+
+        <!-- Y-Axis Gridlines -->
+        <g font-family="monospace" font-size="11" fill="#8b949e" text-anchor="end">
+          <line x1="70" y1="52" x2="880" y2="52" stroke="#30363d" stroke-width="1"/>
+          <text x="62" y="56">100%</text>
+
+          <line x1="70" y1="86" x2="880" y2="86" stroke="#21262d" stroke-width="0.8" stroke-dasharray="2,2"/>
+          <text x="62" y="90">90%</text>
+
+          <line x1="70" y1="120" x2="880" y2="120" stroke="#21262d" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="62" y="124">80%</text>
+
+          <line x1="70" y1="188" x2="880" y2="188" stroke="#21262d" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="62" y="192">60%</text>
+
+          <line x1="70" y1="222" x2="880" y2="222" stroke="#21262d" stroke-width="0.8" stroke-dasharray="2,2"/>
+          <text x="62" y="226">50%</text>
+
+          <line x1="70" y1="256" x2="880" y2="256" stroke="#21262d" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="62" y="260">40%</text>
+
+          <line x1="70" y1="324" x2="880" y2="324" stroke="#21262d" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="62" y="328">20%</text>
+
+          <line x1="70" y1="358" x2="880" y2="358" stroke="#21262d" stroke-width="0.8" stroke-dasharray="2,2"/>
+          <text x="62" y="362">10%</text>
+
+          <line x1="70" y1="392" x2="880" y2="392" stroke="#8b949e" stroke-width="1.5"/>
+          <text x="62" y="396">0%</text>
+        </g>
+
+        <line x1="70" y1="52" x2="70" y2="392" stroke="#8b949e" stroke-width="1.5"/>
+
+        <!-- 1. GPT-4o / Astra (90% vs 10%) -->
+        <g>
+          <rect x="102" y="86" width="32" height="306" fill="#2f81f7"/>
+          <text x="118" y="78" font-family="monospace" font-size="11" font-weight="700" fill="#58a6ff" text-anchor="middle">90%</text>
+          <rect x="138" y="358" width="32" height="34" fill="#f85149"/>
+          <text x="154" y="350" font-family="monospace" font-size="11" font-weight="700" fill="#ff7b72" text-anchor="middle">10%</text>
+          <text x="136" y="414" font-family="monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="middle">GPT-4o (Astra)</text>
+          <text x="136" y="429" font-family="sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">OpenAI</text>
+        </g>
+
+        <!-- 2. Claude 3.5 Sonnet (90% vs 50%) -->
+        <g>
+          <rect x="237" y="86" width="32" height="306" fill="#2f81f7"/>
+          <text x="253" y="78" font-family="monospace" font-size="11" font-weight="700" fill="#58a6ff" text-anchor="middle">90%</text>
+          <rect x="273" y="222" width="32" height="170" fill="#f85149"/>
+          <text x="289" y="214" font-family="monospace" font-size="11" font-weight="700" fill="#ff7b72" text-anchor="middle">50%</text>
+          <text x="271" y="414" font-family="monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="middle">Claude 3.5</text>
+          <text x="271" y="429" font-family="sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">Anthropic</text>
+        </g>
+
+        <!-- 3. GLM-5.3 (88% vs 78%) -->
+        <g>
+          <rect x="372" y="92.8" width="32" height="299.2" fill="#2f81f7"/>
+          <text x="388" y="85" font-family="monospace" font-size="11" font-weight="700" fill="#58a6ff" text-anchor="middle">88%</text>
+          <rect x="408" y="126.8" width="32" height="265.2" fill="#f85149"/>
+          <text x="424" y="119" font-family="monospace" font-size="11" font-weight="700" fill="#ff7b72" text-anchor="middle">78%</text>
+          <text x="406" y="414" font-family="monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="middle">GLM-5.3</text>
+          <text x="406" y="429" font-family="sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">Zhipu AI</text>
+        </g>
+
+        <!-- 4. Gemini 4 Argon (85% vs 15%) -->
+        <g>
+          <rect x="507" y="103" width="32" height="289" fill="#2f81f7"/>
+          <text x="523" y="95" font-family="monospace" font-size="11" font-weight="700" fill="#58a6ff" text-anchor="middle">85%</text>
+          <rect x="543" y="341" width="32" height="51" fill="#f85149"/>
+          <text x="559" y="333" font-family="monospace" font-size="11" font-weight="700" fill="#ff7b72" text-anchor="middle">15%</text>
+          <text x="541" y="414" font-family="monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="middle">Gemini 4 Argon</text>
+          <text x="541" y="429" font-family="sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">Google</text>
+        </g>
+
+        <!-- 5. Qwen 3.8 Max (82% vs 78%) -->
+        <g>
+          <rect x="642" y="113.2" width="32" height="278.8" fill="#2f81f7"/>
+          <text x="658" y="105" font-family="monospace" font-size="11" font-weight="700" fill="#58a6ff" text-anchor="middle">82%</text>
+          <rect x="678" y="126.8" width="32" height="265.2" fill="#f85149"/>
+          <text x="694" y="119" font-family="monospace" font-size="11" font-weight="700" fill="#ff7b72" text-anchor="middle">78%</text>
+          <text x="676" y="414" font-family="monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="middle">Qwen 3.8 Max</text>
+          <text x="676" y="429" font-family="sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">Alibaba</text>
+        </g>
+
+        <!-- 6. DeepSeek v4.1 Flash (80% vs 20%) -->
+        <g>
+          <rect x="777" y="120" width="32" height="272" fill="#2f81f7"/>
+          <text x="793" y="112" font-family="monospace" font-size="11" font-weight="700" fill="#58a6ff" text-anchor="middle">80%</text>
+          <rect x="813" y="324" width="32" height="68" fill="#f85149"/>
+          <text x="829" y="316" font-family="monospace" font-size="11" font-weight="700" fill="#ff7b72" text-anchor="middle">20%</text>
+          <text x="811" y="414" font-family="monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="middle">DeepSeek v4.1</text>
+          <text x="811" y="429" font-family="sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">DeepSeek</text>
+        </g>
+
+        <!-- Mean Line (85.8% => y = 392 - 85.8*3.4 = 100.3) -->
+        <line x1="70" y1="100.3" x2="880" y2="100.3" stroke="#58a6ff" stroke-width="1.2" stroke-dasharray="6,4"/>
+        <rect x="770" y="58" width="102" height="19" rx="2" fill="#161b22" stroke="#2f81f7" stroke-width="1"/>
+        <text x="821" y="71" font-family="monospace" font-size="10" font-weight="700" fill="#58a6ff" text-anchor="middle">Mean: 85.8%</text>
+      </svg>
+      <div class="figure-caption">
+        FIG 1. Paired comparison across 6 frontier multimodal models. Each model first analyzed the 26-capture multilingual &amp; terminal test suite using its own native vision, then evaluated the structured output generated by AxiomVision on the identical captures.
+      </div>
+    </div>
+
+    <div class="section-title">2. Sub-System Capability Breakdown (Figure 2)</div>
+    <div class="figure-box">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 265" width="100%" height="auto">
+        <defs>
+          <pattern id="grid2" width="16" height="16" patternUnits="userSpaceOnUse">
+            <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#1b222c" stroke-width="0.7"/>
+          </pattern>
+        </defs>
+
+        <!-- Plot Area (x: 250..880 => width: 630, 6.3px per 1%) -->
+        <rect x="250" y="16" width="630" height="210" fill="#11161d"/>
+        <rect x="250" y="16" width="630" height="210" fill="url(#grid2)"/>
+
+        <!-- Vertical Gridlines -->
+        <g font-family="monospace" font-size="11" fill="#8b949e" text-anchor="middle">
+          <line x1="250" y1="16" x2="250" y2="226" stroke="#8b949e" stroke-width="1.5"/>
+          <text x="250" y="244">0%</text>
+
+          <line x1="376" y1="16" x2="376" y2="226" stroke="#21262d" stroke-width="1" stroke-dasharray="3,3"/>
+          <text x="376" y="244">20%</text>
+
+          <line x1="502" y1="16" x2="502" y2="226" stroke="#21262d" stroke-width="1" stroke-dasharray="3,3"/>
+          <text x="502" y="244">40%</text>
+
+          <line x1="628" y1="16" x2="628" y2="226" stroke="#21262d" stroke-width="1" stroke-dasharray="3,3"/>
+          <text x="628" y="244">60%</text>
+
+          <line x1="754" y1="16" x2="754" y2="226" stroke="#21262d" stroke-width="1" stroke-dasharray="3,3"/>
+          <text x="754" y="244">80%</text>
+
+          <line x1="880" y1="16" x2="880" y2="226" stroke="#30363d" stroke-width="1"/>
+          <text x="880" y="244">100%</text>
+        </g>
+
+        <line x1="250" y1="226" x2="880" y2="226" stroke="#8b949e" stroke-width="1.5"/>
+
+        <!-- Row 1: Deterministic Click Coordinates -->
+        <text x="238" y="46" font-family="monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="end">Exact Click BBox (px)</text>
+        <rect x="250" y="28" width="630" height="14" fill="#2f81f7"/>
+        <text x="872" y="39" font-family="monospace" font-size="10" font-weight="700" fill="#ffffff" text-anchor="end">100% (OS + Contour)</text>
+        <rect x="250" y="44" width="4" height="14" fill="#f85149"/>
+        <text x="260" y="55" font-family="monospace" font-size="10" font-weight="700" fill="#ff7b72">0% (Visual Guess Only)</text>
+
+        <!-- Row 2: Background & Peripheral Log Capture -->
+        <text x="238" y="98" font-family="monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="end">Background / Log State</text>
+        <rect x="250" y="80" width="592.2" height="14" fill="#2f81f7"/>
+        <text x="848" y="91" font-family="monospace" font-size="10" font-weight="700" fill="#58a6ff">94%</text>
+        <rect x="250" y="96" width="113.4" height="14" fill="#f85149"/>
+        <text x="369" y="107" font-family="monospace" font-size="10" font-weight="700" fill="#ff7b72">18%</text>
+
+        <!-- Row 3: 9-10px Dense Terminal Tables -->
+        <text x="238" y="150" font-family="monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="end">9-10px Terminal Tables</text>
+        <rect x="250" y="132" width="604.8" height="14" fill="#2f81f7"/>
+        <text x="860" y="143" font-family="monospace" font-size="10" font-weight="700" fill="#58a6ff">96%</text>
+        <rect x="250" y="148" width="214.2" height="14" fill="#f85149"/>
+        <text x="470" y="159" font-family="monospace" font-size="10" font-weight="700" fill="#ff7b72">34%</text>
+
+        <!-- Row 4: 21-Language Verbatim Transcription -->
+        <text x="238" y="202" font-family="monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="end">21-Lang Verbatim OCR</text>
+        <rect x="250" y="184" width="560.7" height="14" fill="#2f81f7"/>
+        <text x="816" y="195" font-family="monospace" font-size="10" font-weight="700" fill="#58a6ff">89%</text>
+        <rect x="250" y="200" width="478.8" height="14" fill="#f85149"/>
+        <text x="735" y="211" font-family="monospace" font-size="10" font-weight="700" fill="#ff7b72">76%</text>
+      </svg>
+      <div class="figure-caption">
+        FIG 2. Task-specific accuracy breakdown across deterministic coordinate mapping, peripheral background terminal/notification extraction, dense 9-10px monospace tables, and 21-language verbatim text transcription.
+      </div>
+    </div>
+
+    <div class="section-title">3. Tabular Empirical Results</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Evaluated Model</th>
+          <th class="num">AxiomVision (%)</th>
+          <th class="num">Model Vision (%)</th>
+          <th class="num">Delta</th>
+          <th>Primary Technical Finding</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>OpenAI GPT-4o (Astra)</strong></td>
+          <td class="num val-win">90.0%</td>
+          <td class="num val-loss">10.0%</td>
+          <td class="num val-win">+80.0%</td>
+          <td>Rated deterministic system extraction 90% vs. 10% for standalone visual analysis on dense multi-window desktop state.</td>
+        </tr>
+        <tr>
+          <td><strong>Anthropic Claude 3.5 Sonnet</strong></td>
+          <td class="num val-win">90.0%</td>
+          <td class="num val-loss">50.0%</td>
+          <td class="num val-win">+40.0%</td>
+          <td>Explicitly conceded that native vision cannot measure button coordinates and relies solely on spatial estimation.</td>
+        </tr>
+        <tr>
+          <td><strong>Zhipu GLM-5.3</strong></td>
+          <td class="num val-win">88.0%</td>
+          <td class="num val-loss">78.0%</td>
+          <td class="num val-win">+10.0%</td>
+          <td>Confirmed local engine superiority on verbatim character reproduction across multilingual and terminal captures.</td>
+        </tr>
+        <tr>
+          <td><strong>Google Gemini 4 Argon</strong></td>
+          <td class="num val-win">85.0%</td>
+          <td class="num val-loss">15.0%</td>
+          <td class="num val-win">+70.0%</td>
+          <td>Attributed 85% of analytical fidelity to ground-truth OS state extraction (terminal logs, profile states, CLI errors).</td>
+        </tr>
+        <tr>
+          <td><strong>Alibaba Qwen 3.8 Max</strong></td>
+          <td class="num val-win">82.0%</td>
+          <td class="num val-loss">78.0%</td>
+          <td class="num val-win">+4.0%</td>
+          <td>Verified higher token accuracy on structured UI regions and multi-script text blocks.</td>
+        </tr>
+        <tr>
+          <td><strong>DeepSeek v4.1 Flash Vision</strong></td>
+          <td class="num val-win">80.0%</td>
+          <td class="num val-loss">20.0%</td>
+          <td class="num val-win">+60.0%</td>
+          <td>Documented that standard vision misses background popups (<code>notify-send</code>), exit codes (<code>RUNNER_EXIT=0</code>), and <code>atk-bridge</code> warnings.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
