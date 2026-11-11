@@ -1,154 +1,137 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="960" height="540">
   <defs>
     <pattern id="minorGrid" width="16" height="16" patternUnits="userSpaceOnUse">
-      <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#e5e7eb" stroke-width="0.6"/>
+      <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#1b222c" stroke-width="0.7"/>
     </pattern>
   </defs>
 
-  <!-- Background -->
-  <rect width="960" height="540" fill="#ffffff"/>
-  <rect x="1" y="1" width="958" height="538" fill="none" stroke="#d0d7de" stroke-width="1"/>
+  <!-- Carbon Slate Background -->
+  <rect width="960" height="540" rx="6" fill="#0d1117"/>
+  <rect x="0.5" y="0.5" width="959" height="539" rx="6" fill="none" stroke="#30363d" stroke-width="1"/>
 
   <!-- Title Block -->
-  <text x="80" y="38" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="16" font-weight="700" fill="#1f2328">
+  <text x="80" y="38" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="15.5" font-weight="700" fill="#e6edf3" letter-spacing="0.2">
     BENCHMARK: DETERMINISTIC OS VISION (AXIOMVISION) VS. FRONTIER VISION LLMS
   </text>
-  <text x="80" y="58" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12" fill="#57606a">
+  <text x="80" y="58" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12" fill="#8b949e">
     Dataset: 26 real-world desktop captures (21 languages, dense terminal tables, background logs, and UI controls) · Metric: Blind Self-Audit Score (%)
   </text>
 
   <!-- Legend Box -->
-  <g transform="translate(620, 72)">
-    <rect x="0" y="0" width="290" height="32" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1"/>
-    <rect x="12" y="10" width="12" height="12" fill="#0969da"/>
-    <text x="30" y="20" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="600" fill="#1f2328">AxiomVision Engine</text>
-    <rect x="166" y="10" width="12" height="12" fill="#cf222e"/>
-    <text x="184" y="20" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="600" fill="#1f2328">Native Vision LLM</text>
+  <g transform="translate(612, 72)">
+    <rect x="0" y="0" width="298" height="30" rx="3" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+    <rect x="12" y="9" width="12" height="12" rx="1.5" fill="#2f81f7"/>
+    <text x="30" y="19" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="600" fill="#e6edf3">AxiomVision Engine</text>
+    <rect x="170" y="9" width="12" height="12" rx="1.5" fill="#f85149"/>
+    <text x="188" y="19" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="600" fill="#e6edf3">Native Vision LLM</text>
   </g>
 
   <!-- Plot Area (x: 80..910, y: 120..440 => width: 830, height: 320) -->
+  <rect x="80" y="120" width="830" height="320" fill="#11161d"/>
   <rect x="80" y="120" width="830" height="320" fill="url(#minorGrid)"/>
 
   <!-- Horizontal Major Gridlines & Y-Axis Ticks (0% to 100%, 3.2px per 1%) -->
-  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#57606a" text-anchor="end">
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#8b949e" text-anchor="end">
     <!-- 100% -> y = 120 -->
-    <line x1="80" y1="120" x2="910" y2="120" stroke="#afb8c1" stroke-width="1"/>
+    <line x1="80" y1="120" x2="910" y2="120" stroke="#30363d" stroke-width="1"/>
     <text x="70" y="124">100%</text>
 
     <!-- 80% -> y = 184 -->
-    <line x1="80" y1="184" x2="910" y2="184" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="80" y1="184" x2="910" y2="184" stroke="#21262d" stroke-width="1" stroke-dasharray="4,3"/>
     <text x="70" y="188">80%</text>
 
     <!-- 60% -> y = 248 -->
-    <line x1="80" y1="248" x2="910" y2="248" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="80" y1="248" x2="910" y2="248" stroke="#21262d" stroke-width="1" stroke-dasharray="4,3"/>
     <text x="70" y="252">60%</text>
 
     <!-- 40% -> y = 312 -->
-    <line x1="80" y1="312" x2="910" y2="312" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="80" y1="312" x2="910" y2="312" stroke="#21262d" stroke-width="1" stroke-dasharray="4,3"/>
     <text x="70" y="316">40%</text>
 
     <!-- 20% -> y = 376 -->
-    <line x1="80" y1="376" x2="910" y2="376" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="80" y1="376" x2="910" y2="376" stroke="#21262d" stroke-width="1" stroke-dasharray="4,3"/>
     <text x="70" y="380">20%</text>
 
     <!-- 0% -> y = 440 -->
-    <line x1="80" y1="440" x2="910" y2="440" stroke="#1f2328" stroke-width="1.5"/>
+    <line x1="80" y1="440" x2="910" y2="440" stroke="#8b949e" stroke-width="1.5"/>
     <text x="70" y="444">0%</text>
   </g>
 
   <!-- Left Y-Axis Spine -->
-  <line x1="80" y1="120" x2="80" y2="440" stroke="#1f2328" stroke-width="1.5"/>
+  <line x1="80" y1="120" x2="80" y2="440" stroke="#8b949e" stroke-width="1.5"/>
 
   <!-- Y-Axis Label -->
-  <text x="24" y="280" transform="rotate(-90 24,280)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="600" fill="#1f2328" text-anchor="middle">
+  <text x="24" y="280" transform="rotate(-90 24,280)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="600" fill="#8b949e" text-anchor="middle">
     EVALUATED ACCURACY / CONTRIBUTION (%)
   </text>
 
-  <!-- Group 1: GPT-4o / Astra (90% vs 10%) | Center x = 149 -->
+  <!-- Group 1: GPT-4o / Astra (90% vs 10%) -->
   <g>
-    <!-- AxiomVision 90% => h = 288, y = 152 -->
-    <rect x="111" y="152" width="34" height="288" fill="#0969da"/>
-    <text x="128" y="145" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#0969da" text-anchor="middle">90%</text>
-    <!-- Native LLM 10% => h = 32, y = 408 -->
-    <rect x="149" y="408" width="34" height="32" fill="#cf222e"/>
-    <text x="166" y="401" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#cf222e" text-anchor="middle">10%</text>
-    <!-- Label -->
-    <text x="147" y="462" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#1f2328" text-anchor="middle">GPT-4o / Astra</text>
-    <text x="147" y="477" font-family="ui-sans-serif, sans-serif" font-size="10" fill="#57606a" text-anchor="middle">OpenAI</text>
+    <rect x="111" y="152" width="34" height="288" fill="#2f81f7"/>
+    <text x="128" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#58a6ff" text-anchor="middle">90%</text>
+    <rect x="149" y="408" width="34" height="32" fill="#f85149"/>
+    <text x="166" y="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#ff7b72" text-anchor="middle">10%</text>
+    <text x="147" y="463" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="middle">GPT-4o (Astra)</text>
+    <text x="147" y="478" font-family="ui-sans-serif, sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">OpenAI</text>
   </g>
 
-  <!-- Group 2: Claude 3.5 Sonnet (90% vs 50%) | Center x = 287 -->
+  <!-- Group 2: Claude 3.5 Sonnet (90% vs 50%) -->
   <g>
-    <!-- AxiomVision 90% => h = 288, y = 152 -->
-    <rect x="249" y="152" width="34" height="288" fill="#0969da"/>
-    <text x="266" y="145" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#0969da" text-anchor="middle">90%</text>
-    <!-- Native LLM 50% => h = 160, y = 280 -->
-    <rect x="287" y="280" width="34" height="160" fill="#cf222e"/>
-    <text x="304" y="273" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#cf222e" text-anchor="middle">50%</text>
-    <!-- Label -->
-    <text x="285" y="462" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#1f2328" text-anchor="middle">Claude 3.5</text>
-    <text x="285" y="477" font-family="ui-sans-serif, sans-serif" font-size="10" fill="#57606a" text-anchor="middle">Anthropic</text>
+    <rect x="249" y="152" width="34" height="288" fill="#2f81f7"/>
+    <text x="266" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#58a6ff" text-anchor="middle">90%</text>
+    <rect x="287" y="280" width="34" height="160" fill="#f85149"/>
+    <text x="304" y="272" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#ff7b72" text-anchor="middle">50%</text>
+    <text x="285" y="463" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="middle">Claude 3.5</text>
+    <text x="285" y="478" font-family="ui-sans-serif, sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">Anthropic</text>
   </g>
 
-  <!-- Group 3: GLM-5.3 (88% vs 78%) | Center x = 425 -->
+  <!-- Group 3: GLM-5.3 (88% vs 78%) -->
   <g>
-    <!-- AxiomVision 88% => h = 281.6, y = 158.4 -->
-    <rect x="387" y="158.4" width="34" height="281.6" fill="#0969da"/>
-    <text x="404" y="151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#0969da" text-anchor="middle">88%</text>
-    <!-- Native LLM 78% => h = 249.6, y = 190.4 -->
-    <rect x="425" y="190.4" width="34" height="249.6" fill="#cf222e"/>
-    <text x="442" y="183" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#cf222e" text-anchor="middle">78%</text>
-    <!-- Label -->
-    <text x="423" y="462" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#1f2328" text-anchor="middle">GLM-5.3</text>
-    <text x="423" y="477" font-family="ui-sans-serif, sans-serif" font-size="10" fill="#57606a" text-anchor="middle">Zhipu AI</text>
+    <rect x="387" y="158.4" width="34" height="281.6" fill="#2f81f7"/>
+    <text x="404" y="150" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#58a6ff" text-anchor="middle">88%</text>
+    <rect x="425" y="190.4" width="34" height="249.6" fill="#f85149"/>
+    <text x="442" y="182" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#ff7b72" text-anchor="middle">78%</text>
+    <text x="423" y="463" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="middle">GLM-5.3</text>
+    <text x="423" y="478" font-family="ui-sans-serif, sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">Zhipu AI</text>
   </g>
 
-  <!-- Group 4: Gemini 4 Argon (85% vs 15%) | Center x = 563 -->
+  <!-- Group 4: Gemini 4 Argon (85% vs 15%) -->
   <g>
-    <!-- AxiomVision 85% => h = 272, y = 168 -->
-    <rect x="525" y="168" width="34" height="272" fill="#0969da"/>
-    <text x="542" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#0969da" text-anchor="middle">85%</text>
-    <!-- Native LLM 15% => h = 48, y = 392 -->
-    <rect x="563" y="392" width="34" height="48" fill="#cf222e"/>
-    <text x="580" y="385" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#cf222e" text-anchor="middle">15%</text>
-    <!-- Label -->
-    <text x="561" y="462" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#1f2328" text-anchor="middle">Gemini 4 Argon</text>
-    <text x="561" y="477" font-family="ui-sans-serif, sans-serif" font-size="10" fill="#57606a" text-anchor="middle">Google</text>
+    <rect x="525" y="168" width="34" height="272" fill="#2f81f7"/>
+    <text x="542" y="160" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#58a6ff" text-anchor="middle">85%</text>
+    <rect x="563" y="392" width="34" height="48" fill="#f85149"/>
+    <text x="580" y="384" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#ff7b72" text-anchor="middle">15%</text>
+    <text x="561" y="463" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="middle">Gemini 4 Argon</text>
+    <text x="561" y="478" font-family="ui-sans-serif, sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">Google</text>
   </g>
 
-  <!-- Group 5: Qwen 3.8 Max (82% vs 78%) | Center x = 701 -->
+  <!-- Group 5: Qwen 3.8 Max (82% vs 78%) -->
   <g>
-    <!-- AxiomVision 82% => h = 262.4, y = 177.6 -->
-    <rect x="663" y="177.6" width="34" height="262.4" fill="#0969da"/>
-    <text x="680" y="170" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#0969da" text-anchor="middle">82%</text>
-    <!-- Native LLM 78% => h = 249.6, y = 190.4 -->
-    <rect x="701" y="190.4" width="34" height="249.6" fill="#cf222e"/>
-    <text x="718" y="183" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#cf222e" text-anchor="middle">78%</text>
-    <!-- Label -->
-    <text x="699" y="462" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#1f2328" text-anchor="middle">Qwen 3.8 Max</text>
-    <text x="699" y="477" font-family="ui-sans-serif, sans-serif" font-size="10" fill="#57606a" text-anchor="middle">Alibaba</text>
+    <rect x="663" y="177.6" width="34" height="262.4" fill="#2f81f7"/>
+    <text x="680" y="169" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#58a6ff" text-anchor="middle">82%</text>
+    <rect x="701" y="190.4" width="34" height="249.6" fill="#f85149"/>
+    <text x="718" y="182" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#ff7b72" text-anchor="middle">78%</text>
+    <text x="699" y="463" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="middle">Qwen 3.8 Max</text>
+    <text x="699" y="478" font-family="ui-sans-serif, sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">Alibaba</text>
   </g>
 
-  <!-- Group 6: DeepSeek v4.1 Flash (80% vs 20%) | Center x = 839 -->
+  <!-- Group 6: DeepSeek v4.1 Flash (80% vs 20%) -->
   <g>
-    <!-- AxiomVision 80% => h = 256, y = 184 -->
-    <rect x="801" y="184" width="34" height="256" fill="#0969da"/>
-    <text x="818" y="177" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#0969da" text-anchor="middle">80%</text>
-    <!-- Native LLM 20% => h = 64, y = 376 -->
-    <rect x="839" y="376" width="34" height="64" fill="#cf222e"/>
-    <text x="856" y="369" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#cf222e" text-anchor="middle">20%</text>
-    <!-- Label -->
-    <text x="837" y="462" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#1f2328" text-anchor="middle">DeepSeek v4.1</text>
-    <text x="837" y="477" font-family="ui-sans-serif, sans-serif" font-size="10" fill="#57606a" text-anchor="middle">DeepSeek</text>
+    <rect x="801" y="184" width="34" height="256" fill="#2f81f7"/>
+    <text x="818" y="176" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#58a6ff" text-anchor="middle">80%</text>
+    <rect x="839" y="376" width="34" height="64" fill="#f85149"/>
+    <text x="856" y="368" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#ff7b72" text-anchor="middle">20%</text>
+    <text x="837" y="463" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="#e6edf3" text-anchor="middle">DeepSeek v4.1</text>
+    <text x="837" y="478" font-family="ui-sans-serif, sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">DeepSeek</text>
   </g>
 
-  <!-- Mean Dashed Reference Line for AxiomVision (85.8% => y = 440 - 85.8*3.2 = 165.4) -->
-  <line x1="80" y1="165.4" x2="910" y2="165.4" stroke="#0969da" stroke-width="1.2" stroke-dasharray="6,4"/>
-  <rect x="802" y="127" width="104" height="18" fill="#ffffff" stroke="#0969da" stroke-width="0.8"/>
-  <text x="854" y="139" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" font-weight="700" fill="#0969da" text-anchor="middle">Mean: 85.8%</text>
+  <!-- Mean Dashed Reference Line for AxiomVision (85.8% => y = 165.4) -->
+  <line x1="80" y1="165.4" x2="910" y2="165.4" stroke="#58a6ff" stroke-width="1.2" stroke-dasharray="6,4"/>
+  <rect x="798" y="126" width="106" height="20" rx="2" fill="#161b22" stroke="#2f81f7" stroke-width="1"/>
+  <text x="851" y="139" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" font-weight="700" fill="#58a6ff" text-anchor="middle">Mean: 85.8%</text>
 
   <!-- Footer Note -->
-  <text x="80" y="515" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="#57606a">
+  <text x="80" y="516" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10.5" fill="#8b949e">
     Note: All Vision LLMs produce 0% deterministic pixel coordinates (visual estimation only), whereas AxiomVision outputs exact OS/pixel bounding boxes.
   </text>
 </svg>
