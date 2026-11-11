@@ -1,4 +1,4 @@
-name: AxiomUI CI
+name: AxiomVision CI
 
 on:
   push:

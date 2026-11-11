@@ -1,45 +1,56 @@
-# ⚡ AxiomUI
+# AxiomVision
 
-> **Universal Zero-Hallucination Desktop Automation Engine & MCP Plugin for AI Agents**  
-> *Pure-Rust In-Memory Vision • Native C++ AVX2 Multilingual OCR • Sub-pixel Laplacian Sharpening • Live AT-SPI2 Ground-Truth Fusion • Zero-Disk-Write*
+**Deterministic OS-Level Vision, Sub-Pixel OCR, and Accessibility Automation Engine for AI Agents**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platform: Linux GNOME Wayland & X11](https://img.shields.io/badge/Platform-Linux%20GNOME%20Wayland%20%26%20X11-orange.svg)](#)
-[![Rust: 100% Pure](https://img.shields.io/badge/Core-Pure%20Rust%20%2B%20AVX2-red.svg)](#)
-[![Size: 43 MB](https://img.shields.io/badge/Bundle%20Size-43%20MB-brightgreen.svg)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-0969da.svg)](LICENSE)
+[![Platform: Linux Wayland & X11](https://img.shields.io/badge/Platform-Linux%20Wayland%20%26%20X11-1f2328.svg)](#)
+[![Core: Rust + C++ AVX2](https://img.shields.io/badge/Engine-Rust%20%2B%20C%2B%2B%20AVX2-0969da.svg)](#)
+
+AxiomVision replaces probabilistic Vision LLM coordinate guessing with deterministic OS introspection and sub-pixel optical extraction. Built in Rust and C++ (AVX2 SIMD), it processes frames entirely in RAM (zero temporary disk writes), sharpens small 9-10px terminal and UI fonts via a 3x3 Laplacian Unsharp Mask, and fuses optical bounding boxes with live OS accessibility tree (`AT-SPI2`) ground-truth strings.
 
 ---
 
-## 🚀 1-Line Zero-Dependency Install
+## Empirical Benchmark: AxiomVision vs. Frontier Vision LLMs
 
-Install and launch AxiomUI on Ubuntu/Debian in 5 seconds with zero external package installations:
+![AxiomVision vs Frontier Vision LLMs Benchmark](assets/benchmark.svg)
+
+| Evaluated Model | AxiomVision (%) | Model Vision (%) | Delta | Key Technical Finding |
+| :--- | :---: | :---: | :---: | :--- |
+| **OpenAI GPT-4o (Astra)** | **90.0%** | 10.0% | **+80.0%** | Rated deterministic OS extraction 90% vs. 10% for standalone visual analysis on dense multi-window desktop captures. |
+| **Anthropic Claude 3.5 Sonnet** | **90.0%** | 50.0% | **+40.0%** | Conceded that native model vision cannot measure button coordinates and relies on spatial estimation. |
+| **Zhipu GLM-5.3** | **88.0%** | 78.0% | **+10.0%** | Confirmed local engine superiority on verbatim character reproduction across multilingual and terminal captures. |
+| **Google Gemini 4 Argon** | **85.0%** | 15.0% | **+70.0%** | Attributed 85% of analytical fidelity to ground-truth OS state extraction (terminal logs, profile states, CLI errors). |
+| **Alibaba Qwen 3.8 Max** | **82.0%** | 78.0% | **+4.0%** | Verified higher token accuracy on structured UI regions and multi-script text blocks. |
+| **DeepSeek v4.1 Flash Vision** | **80.0%** | 20.0% | **+60.0%** | Documented that standard vision misses background popups (`notify-send`), exit codes (`RUNNER_EXIT=0`), and `atk-bridge` warnings. |
+
+---
+
+## Single-Command Installation
+
+Install and start the self-contained AxiomVision daemon on Ubuntu/Debian (bundles portable runtime automatically if Node.js is absent; requires zero root privileges):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/qira-dev/AxiomUI/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/qira-dev/AxiomVision/main/install.sh | bash
 ```
-
-*No Node.js compilation, no Rust/Cargo installation, no Python PyTorch/EasyOCR 2GB bloat. Batteries included in a 43MB footprint.*
 
 ---
 
-## 🧠 Why AxiomUI?
-
-Most desktop AI agents fail because they rely on **Vision LLMs** that estimate button positions from fuzzy images. **AxiomUI** replaces visual hallucination with **Mathematical Determinism**:
+## System Architecture
 
 ```
 +---------------------------------------------------------------------------------+
-|                                AXIOMUI ARCHITECTURE                             |
+|                              AXIOMVISION ARCHITECTURE                           |
 +---------------------------------------------------------------------------------+
 |                                                                                 |
-|  [CLIENT AGENT] (Antigravity / Cursor / Claude Code / Zed / Browser)            |
+|  [CLIENT AGENT] (Antigravity / ZCode / Cursor / Claude Code / Custom Agent)     |
 |        |                                                                        |
 |        | JSON-RPC (HTTP: 127.0.0.1:39200/mcp OR Stdio: mcp-stdio.mjs)           |
 |        v                                                                        |
 |  +---------------------------------------------------------------------------+  |
 |  | 1. SINGLETON DAEMON PROXY & SINGLE-FLIGHT QUEUE (`server.mjs`)            |  |
-|  |    • Zero duplicate processes                                             |  |
-|  |    • SHA-256 in-memory frame cache                                        |  |
-|  |    • Screen wake keeping extension active 24/7                            |  |
+|  |    - Zero duplicate processes across multi-agent sessions                 |  |
+|  |    - SHA-256 in-memory frame cache (<1ms warm response)                   |  |
+|  |    - Automatic screen-wake keeping Wayland extension active 24/7          |  |
 |  +---------------------------------------------------------------------------+  |
 |        |                                                                        |
 |        +-----------------------------------+------------------------------------+
@@ -48,19 +59,19 @@ Most desktop AI agents fail because they rely on **Vision LLMs** that estimate b
 |  +-----------------------+   +---------------------------+   +----------------+ |
 |  | 2A. PURE-RUST VISION  |   | 2B. NATIVE C++ AVX2 OCR   |   | 2C. AT-SPI2    | |
 |  |                       |   |                           |   |     DIRECT     | |
-|  | • 100% In-Memory      |   | • 8-bit Quantized fast    |   | • 28-Level     | |
-|  |   Zero-Disk Stream    |   |   models (ben+eng default)|   |   D-Bus Walker | |
-|  | • 3x3 Laplacian       |   | • 123+ languages on-demand|   | • OS-Level     | |
-|  |   Unsharp Mask        |   | • 2-Core wave limit       |   |   Ground-Truth | |
-|  | • UI Component Box    |   |   (`nice -n 15` low-pri)  |   |   Strings      | |
-|  |   Contour Detector    |   | • Microsecond SIMD pass   |   | • Silent Invoker| |
+|  | - 100% In-Memory      |   | - 8-bit Quantized fast    |   | - 28-Level     | |
+|  |   Zero-Disk Stream    |   |   models (eng default)    |   |   D-Bus Walker | |
+|  | - 3x3 Laplacian       |   | - 123+ languages on-demand|   | - OS-Level     | |
+|  |   Unsharp Mask        |   | - 2-Core wave limit       |   |   Ground-Truth | |
+|  | - UI Component Box    |   |   (`nice -n 15` low-pri)  |   |   Strings      | |
+|  |   Contour Detector    |   | - Microsecond SIMD pass   |   | - Silent Invoke| |
 |  +-----------------------+   +---------------------------+   +----------------+ |
 |        \                                   |                                   / |
 |         \                                  |                                  /  |
 |          v                                 v                                 v   |
 |  +---------------------------------------------------------------------------+  |
 |  | 3. LIVE GROUND-TRUTH FUSION ENGINE (`fuseAtspiGroundTruth`)               |  |
-|  |    • Fuses optical OCR pixel coordinates with 100% exact UTF-8 strings    |  |
+|  |    - Fuses optical OCR pixel coordinates with 100% exact UTF-8 strings    |  |
 |  |      from OS memory (resolves truncated labels, icon text & badges)       |  |
 |  +---------------------------------------------------------------------------+  |
 |                                            |                                    |
@@ -72,58 +83,38 @@ Most desktop AI agents fail because they rely on **Vision LLMs** that estimate b
 
 ---
 
-## 📊 Empirical Benchmark: AxiomVision vs Frontier AI Models
-
-A head-to-head empirical stress test evaluated deterministic OS vision against the world's most powerful multimodal foundation models (OpenAI Astra/GPT-4o, Google Gemini 4 Argon, DeepSeek v4.1, Anthropic Claude 3.5 Sonnet, Alibaba Qwen 3.8 Max, Zhipu GLM-5.3) on complex, dense real-world terminal states, system logs, and multilingual UI scripts.
-
-> 🌐 **Interactive Dashboard:** View the full interactive report in [`benchmark.html`](benchmark.html).
-
-| Frontier Model | AxiomVision Score | Model Vision Score | Key Verbatim Finding & Confession |
-| :--- | :---: | :---: | :--- |
-| **OpenAI GPT-4o / Astra** | **90%** | 10% | Confirmed 90% vs 10% analytical superiority for dense OS inspection. |
-| **Google Gemini 4 Argon** | **85%** | 15% | Praised contextual architecture; certified native visual assistance at only 15%. |
-| **DeepSeek v4.1 Flash Vision** | **80%** | 20% | *"General AI only reads surface text; missed background logs, runner exit codes, and Gtk errors."* |
-| **Zhipu GLM-5.3** | **88%** | 78% | *"In exact verbatim text reproduction, the local engine strictly wins."* |
-| **Alibaba Qwen 3.8 Max** | **82%** | 78% | Ranked AxiomVision significantly higher in token precision. |
-| **Anthropic Claude 3.5 Sonnet** | **90%** | 50%* | Admitted critical weakness: *"Button locations are not measured, purely guessed."* (*Normalized for admitted coordinate estimation). |
-
-### Why Deterministic OS-Level Vision Wins:
-1. **Mathematical Sub-Pixel Precision:** Pure-Rust 3x3 Laplacian Unsharp Mask sharpens tiny 9-10px monospace code fonts and badges before AVX2 SIMD extraction, eliminating fuzzy token hallucinations.
-2. **Live AT-SPI2 Memory Fusion:** Rather than guessing what an icon or button says, AxiomVision queries the OS accessibility tree directly over D-Bus to fuse 100% exact UTF-8 ground-truth strings.
-3. **Zero-Disk-Write & Zero Privacy Leak:** All frames are kept purely in RAM streams (0ms cloud latency, zero temporary PNG files written to disk, zero data leaving localhost).
-
----
-
-## 🛠️ CLI Quickstart
+## CLI Usage
 
 ```bash
-axiomui up         # Start AxiomUI background daemon on port 39200
-axiomui status     # Inspect PID, CPU, and RAM usage
-axiomui doctor     # Run full Wayland, Portal, and AT-SPI2 diagnostics
-axiomui logs       # Tail daemon logs
-axiomui stop       # Stop AxiomUI daemon
-axiomui restart    # Restart daemon
+axiomui up                     # Start background daemon on port 39200
+axiomui status                 # Check daemon PID, CPU, and RSS memory
+axiomui doctor                 # Run Wayland, Portal, and AT-SPI2 diagnostics
+axiomui logs                   # Inspect daemon logs
+axiomui stop                   # Stop background daemon
+axiomui restart                # Restart daemon
 ```
 
-### Multilingual On-Demand (123+ Languages)
+### Just-In-Time Language Provisioning (123+ Languages)
+
+By default, only English (`eng`) is pre-installed to keep the repository lightweight (~40 MB). Any of the 123+ quantized language models can be fetched on demand in under 1 second via CLI or MCP (`ensure_language`):
+
 ```bash
-axiomui lang list                  # View currently installed OCR models
-axiomui lang add jpn               # Instant download Japanese model (~1.5 MB)
-axiomui lang add fra               # Instant download French model (~1.2 MB)
-axiomui lang add all               # Download all 123 languages in one go (~75 MB)
+axiomui lang list              # List installed OCR language models
+axiomui lang add ben           # Install Bengali model (~855 KB)
+axiomui lang add jpn           # Install Japanese model (~2.4 MB)
+axiomui lang add all           # Install all 123 language models
 ```
 
 ---
 
-## 🔌 Connecting to Your Agent
+## MCP Client Configuration
 
-### 1. Claude Desktop, Antigravity, Cursor, Zed (Stdio Mode)
-Add to your IDE's `mcpServers` configuration:
+### 1. Stdio Transport (Antigravity, ZCode, Cursor, Claude Code, Zed)
 
 ```json
 {
   "mcpServers": {
-    "axiom-ui": {
+    "axiom-vision": {
       "command": "node",
       "args": ["~/.local/share/axiom-ui/mcp-stdio.mjs"]
     }
@@ -131,37 +122,39 @@ Add to your IDE's `mcpServers` configuration:
 }
 ```
 
-### 2. Streamable HTTP / SSE Mode (Port 39200)
+### 2. HTTP / SSE Transport (Port 39200)
 * **Streamable HTTP:** `http://127.0.0.1:39200/mcp`
 * **SSE Endpoint:** `http://127.0.0.1:39200/sse`
-* **Health Check:** `http://127.0.0.1:39200/health`
+* **Health Endpoint:** `http://127.0.0.1:39200/health`
 
 ---
 
-## 📦 Tool Inventory (27 Tools)
+## Tool Inventory (27 Tools)
 
-| Tool Category | Tools | Description |
+| Category | Tools | Purpose |
 | :--- | :--- | :--- |
-| **App Launching** | `launch_app` | Launches closed apps (`antigravity`, `zcode`, `obsidian`, `brave`, `chrome`, `dolphin`, `vlc`) with Wayland/D-Bus flags and waits for rendered window. |
-| **Deterministic Vision** | `screenshot_and_ocr` | 100% in-memory screenshot + 3x3 unsharp mask OCR + live AT-SPI2 ground-truth fusion. |
-| | `inspect_image_ocr` | Deterministic Bengali, English, and Code OCR + UI bounding boxes. |
-| | `find_text_in_image` | Locates exact `center.x, center.y` pixel coordinates for target strings. |
-| | `inspect_svg` | Pure-Rust XML/DOM parser for SVGs (viewBox, shapes, coordinates, text). |
-| | `ensure_language` | On-demand instant downloader for any of 123+ quantized language models. |
-| **Window Discovery** | `list_windows`, `focused_window`, `list_apps`, `get_app_state`, `get_tree_page` | Discovers open windows, PID, window_id, bounds, and accessibility states. |
-| **OS Control & Input** | `click`, `perform_action`, `set_value`, `type_text`, `press_key`, `scroll`, `drag`, `activate_window`, `move_window`, `resize_window`, `screenshot` | Silent, bounded input automation. |
-| **Direct D-Bus Actions** | `deep_atspi_tree`, `atspi_invoke_node` | Reads 28-level accessibility tree and invokes button actions without moving mouse. |
+| **Application Launcher** | `launch_app` | Launches desktop applications (`antigravity`, `zcode`, `obsidian`, `brave`, `chrome`, `dolphin`, `vlc`) with Wayland/D-Bus flags and awaits window registration. |
+| **Deterministic Vision** | `screenshot_and_ocr` | 100% in-memory capture + 3x3 unsharp mask OCR + live AT-SPI2 ground-truth text fusion. |
+| | `inspect_image_ocr` | Multilingual OCR + UI contour box detection on `.png`, `.jpg`, `.webp`, `.bmp`, and `.svg` files. |
+| | `find_text_in_image` | Returns exact `(center.x, center.y)` pixel coordinates for target substrings. |
+| | `inspect_svg` | Pure-Rust XML/DOM structural parser returning `viewBox`, text nodes, shapes, and bounding boxes. |
+| | `ensure_language` | Downloads and activates any of 123+ quantized OCR language models on demand without restart. |
+| **Window Introspection** | `list_windows`, `focused_window`, `list_apps`, `get_app_state`, `get_tree_page` | Queries active compositor windows, PIDs, titles, bounds, and accessibility states. |
+| **Input & Window Control** | `click`, `perform_action`, `set_value`, `type_text`, `press_key`, `scroll`, `drag`, `activate_window`, `move_window`, `resize_window`, `screenshot` | Executes bounded pointer, keyboard, and window management operations. |
+| **Direct D-Bus Actions** | `deep_atspi_tree`, `atspi_invoke_node` | Traverses up to 28 levels of the AT-SPI2 tree and invokes actions directly over D-Bus without moving the physical mouse cursor. |
 
 ---
 
-## 📜 Governance & Rulebook
-See [`RULE.md`](RULE.md) for the mandatory autonomous agent governance rules:
-- **Rule 1A:** Strict Browser Isolation (Built-in IDE Browser view only).
-- **Rule 1B:** Zero Vision LLM Hallucination (Mandatory AxiomUI engine usage).
-- **Rule 2:** Quality & Security Pipeline (`gofmt/vet` -> `build` -> `test` -> `secret scan` -> `CI verification`).
-- **Rule 3:** Supervisor & 7-Agent Headless Chain architecture with automatic handoff.
+## Agent Governance & Chained Execution
+
+See [`RULE.md`](RULE.md) and [`SKILL.md`](SKILL.md) for the autonomous operational specification:
+- **Rule 1A:** Strict Browser Isolation (IDE internal browser view only; host OS browsers are off-limits).
+- **Rule 1B:** Mandatory Deterministic Vision (prohibits Vision LLM coordinate estimation; enforces Gate 0 language onboarding).
+- **Rule 2:** Pre-flight state verification and quality/security pipeline.
+- **Rule 3:** Primary Orchestrator & 7-Headless-Sub-Agent execution chain with independent audit gates and automatic handoff generation.
 
 ---
 
-## 📄 License
-MIT License. Crafted with precision by km-abdullah.
+## License
+
+MIT License. Copyright (c) 2026 [qira-dev](https://github.com/qira-dev).

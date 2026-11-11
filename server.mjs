@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * AxiomUI — Universal AI Desktop Automation Engine
+ * AxiomVision — Universal AI Desktop Automation Engine
  * HTTP / Streamable-HTTP / SSE Daemon on Port 39200
  */
 import http from 'node:http';
@@ -66,7 +66,7 @@ const server = http.createServer(async (req, res) => {
       const tools = await bridge.listTools();
       return sendJson(res, 200, {
         ok: true,
-        service: 'AxiomUI',
+        service: 'AxiomVision',
         description: 'Universal Zero-Hallucination Desktop Automation Engine',
         version: '1.0.0',
         host: HOST,
@@ -163,5 +163,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`[AxiomUI] Listening on http://${HOST}:${PORT}/mcp (and /sse, /health)`);
+  console.log(`[AxiomVision] Listening on http://${HOST}:${PORT}/mcp (and /sse, /health)`);
 });

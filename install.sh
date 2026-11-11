@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# AxiomUI — Universal AI Desktop Automation Engine
+# AxiomVision — Universal AI Desktop Automation Engine
 # 1-Liner Zero-Dependency Self-Contained Installer
 # ==============================================================================
 set -euo pipefail
@@ -12,13 +12,13 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo -e "${BOLD}${BLUE}=== AxiomUI Installer (Zero-Hallucination Desktop Automation Engine) ===${NC}"
+echo -e "${BOLD}${BLUE}=== AxiomVision Installer (Zero-Hallucination Desktop Automation Engine) ===${NC}"
 
 OS="$(uname -s)"
 ARCH="$(uname -m)"
 
 if [[ "${OS}" != "Linux" ]]; then
-    echo -e "${RED}[!] Currently AxiomUI automated installer supports Linux (Ubuntu 22.04 / 24.04 / 26.04 GNOME Wayland & X11).${NC}"
+    echo -e "${RED}[!] Currently AxiomVision automated installer supports Linux (Ubuntu 22.04 / 24.04 / 26.04 GNOME Wayland & X11).${NC}"
     echo -e "    Windows & macOS native engine adapters are in development."
     exit 1
 fi
@@ -39,11 +39,11 @@ if [[ -n "${SCRIPT_DIR}" && -f "${SCRIPT_DIR}/server.mjs" && -f "${SCRIPT_DIR}/a
     echo -e "${BLUE}[*] Installing from local source: ${SCRIPT_DIR}...${NC}"
     TARGET_DIR="${SCRIPT_DIR}"
 else
-    echo -e "${BLUE}[*] Cloning AxiomUI into ${INSTALL_DIR}...${NC}"
+    echo -e "${BLUE}[*] Cloning AxiomVision into ${INSTALL_DIR}...${NC}"
     if [[ -d "${INSTALL_DIR}/.git" ]]; then
         git -C "${INSTALL_DIR}" pull --quiet
     else
-        git clone --depth 1 https://github.com/qira-dev/AxiomUI.git "${INSTALL_DIR}"
+        git clone --depth 1 https://github.com/qira-dev/AxiomVision.git "${INSTALL_DIR}"
     fi
     TARGET_DIR="${INSTALL_DIR}"
 fi
@@ -98,11 +98,11 @@ if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
     fi
 fi
 
-# 5. Start AxiomUI Daemon & Run Diagnostics
-echo -e "${BLUE}[*] Starting AxiomUI background service...${NC}"
+# 5. Start AxiomVision Daemon & Run Diagnostics
+echo -e "${BLUE}[*] Starting AxiomVision background service...${NC}"
 "${TARGET_DIR}/axiomui" restart
 
-echo -e "\n${BOLD}${GREEN}✔ AxiomUI successfully installed and running on port 39200!${NC}\n"
+echo -e "\n${BOLD}${GREEN}✔ AxiomVision successfully installed and running on port 39200!${NC}\n"
 echo -e "Commands:"
 echo -e "  • Check status : ${BOLD}axiomui status${NC}"
 echo -e "  • View logs    : ${BOLD}axiomui logs${NC}"

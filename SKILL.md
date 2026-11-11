@@ -1,14 +1,14 @@
 ---
 name: axiom-ui
-description: Mandatory skill for controlling or inspecting the desktop UI, launching applications, onboarding the owner's primary OCR language from 123 languages, capturing silent background screenshots, or analyzing PNG/JPG/WebP images and SVG files with zero vision hallucination via AxiomUI on http://127.0.0.1:39200/mcp.
+description: Mandatory skill for controlling or inspecting the desktop UI, launching applications, onboarding the owner's primary OCR language from 123 languages, capturing silent background screenshots, or analyzing PNG/JPG/WebP images and SVG files with zero vision hallucination via AxiomVision on http://127.0.0.1:39200/mcp.
 ---
-# AxiomUI Skill
+# AxiomVision Skill
 
-Use the local `AxiomUI` engine (running on `http://127.0.0.1:39200/mcp` or `node ~/.local/share/axiom-ui/mcp-stdio.mjs`) to deterministically launch, inspect, and control desktop applications, windows, screenshots, and SVG files without relying on Vision LLM guessing.
+Use the local `AxiomVision` engine (running on `http://127.0.0.1:39200/mcp` or `node ~/.local/share/axiom-ui/mcp-stdio.mjs`) to deterministically launch, inspect, and control desktop applications, windows, screenshots, and SVG files without relying on Vision LLM guessing.
 
 ## Gate 0: Just-In-Time Primary Language Onboarding (123 Languages)
 
-When you connect to `AxiomUI` for the first time on a user's machine:
+When you connect to `AxiomVision` for the first time on a user's machine:
 1. English (`eng`) is pre-installed by default so the repository stays ultra-lightweight (~37 MB).
 2. Call `ensure_language` with `{"language": "list"}` to inspect currently installed languages.
 3. If only `"eng"` is installed:
@@ -25,7 +25,7 @@ When you connect to `AxiomUI` for the first time on a user's machine:
 
 ## Steps
 
-1. Verify `AxiomUI` is running on port `39200`:
+1. Verify `AxiomVision` is running on port `39200`:
    ```bash
    axiomui status || axiomui up
    ```

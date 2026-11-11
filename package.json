@@ -1,5 +1,5 @@
 {
-  "name": "axiom-ui",
+  "name": "axiom-vision",
   "version": "1.0.0",
   "description": "Universal Zero-Hallucination Desktop Automation Engine & MCP Plugin for AI Agents",
   "main": "server.mjs",
@@ -34,7 +34,7 @@
   "author": "qira-dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/qira-dev/AxiomUI.git"
+    "url": "https://github.com/qira-dev/AxiomVision.git"
   },
   "license": "MIT",
   "engines": {
