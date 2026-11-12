@@ -23,6 +23,8 @@ AxiomVision replaces probabilistic Vision LLM coordinate guessing with determini
 | **Alibaba Qwen 3.8 Max** | **82.0%** | 78.0% | **+4.0%** | Verified higher token accuracy on structured UI regions and multi-script text blocks. |
 | **DeepSeek v4.1 Flash Vision** | **80.0%** | 20.0% | **+60.0%** | Documented that standard vision misses background popups (`notify-send`), exit codes (`RUNNER_EXIT=0`), and `atk-bridge` warnings. |
 
+Full technical specification and sub-system plots: [`benchmark.html`](benchmark.html).
+
 ---
 
 ## Single-Command Installation
@@ -86,12 +88,12 @@ curl -fsSL https://raw.githubusercontent.com/qira-dev/AxiomVision/main/install.s
 ## CLI Usage
 
 ```bash
-axiomvision up                     # Start background daemon on port 39200
-axiomvision status                 # Check daemon PID, CPU, and RSS memory
-axiomvision doctor                 # Run Wayland, Portal, and AT-SPI2 diagnostics
-axiomvision logs                   # Inspect daemon logs
-axiomvision stop                   # Stop background daemon
-axiomvision restart                # Restart daemon
+axiomvision up                 # Start background daemon on port 39200
+axiomvision status             # Check daemon PID, CPU, and RSS memory
+axiomvision doctor             # Run Wayland, Portal, and AT-SPI2 diagnostics
+axiomvision logs               # Inspect daemon logs
+axiomvision stop               # Stop background daemon
+axiomvision restart            # Restart daemon
 ```
 
 ### Just-In-Time Language Provisioning (123+ Languages)
@@ -99,10 +101,10 @@ axiomvision restart                # Restart daemon
 By default, only English (`eng`) is pre-installed to keep the repository lightweight (~40 MB). Any of the 123+ quantized language models can be fetched on demand in under 1 second via CLI or MCP (`ensure_language`):
 
 ```bash
-axiomvision lang list              # List installed OCR language models
-axiomvision lang add ben           # Install Bengali model (~855 KB)
-axiomvision lang add jpn           # Install Japanese model (~2.4 MB)
-axiomvision lang add all           # Install all 123 language models
+axiomvision lang list          # List installed OCR language models
+axiomvision lang add ben       # Install Bengali model (~855 KB)
+axiomvision lang add jpn       # Install Japanese model (~2.4 MB)
+axiomvision lang add all       # Install all 123 language models
 ```
 
 ---
@@ -135,7 +137,7 @@ axiomvision lang add all           # Install all 123 language models
 | :--- | :--- | :--- |
 | **Application Launcher** | `launch_app` | Launches desktop applications (`antigravity`, `zcode`, `obsidian`, `brave`, `chrome`, `dolphin`, `vlc`) with Wayland/D-Bus flags and awaits window registration. |
 | **Deterministic Vision** | `screenshot_and_ocr` | 100% in-memory capture + 3x3 unsharp mask OCR + live AT-SPI2 ground-truth text fusion. |
-| | `inspect_image_ocr` | Multilingual OCR + UI contour box detection on `.png`, `.jpg`, `.webp`, `.bmp`, and `.svg` files. |
+| | `inspect_image_ocr` | Single (`file_path`) or sequential batch (`file_paths`) multilingual OCR + UI contour box detection on `.png`, `.jpg`, `.webp`, `.bmp`, and `.svg` files. |
 | | `find_text_in_image` | Returns exact `(center.x, center.y)` pixel coordinates for target substrings. |
 | | `inspect_svg` | Pure-Rust XML/DOM structural parser returning `viewBox`, text nodes, shapes, and bounding boxes. |
 | | `ensure_language` | Downloads and activates any of 123+ quantized OCR language models on demand without restart. |
@@ -145,13 +147,14 @@ axiomvision lang add all           # Install all 123 language models
 
 ---
 
-## Agent Governance & Chained Execution
+## Agent Governance & Operational Specification
 
-See [`RULE.md`](RULE.md) and [`SKILL.md`](SKILL.md) for the autonomous operational specification:
-- **Rule 1A:** Strict Browser Isolation (IDE internal browser view only; host OS browsers are off-limits).
-- **Rule 1B:** Mandatory Deterministic Vision (prohibits Vision LLM coordinate estimation; enforces Gate 0 language onboarding).
-- **Rule 2:** Pre-flight state verification and quality/security pipeline.
-- **Rule 3:** Primary Orchestrator & 7-Headless-Sub-Agent execution chain with independent audit gates and automatic handoff generation.
+See [`RULE.md`](RULE.md) and [`SKILL.md`](SKILL.md) for the complete operational rulebook:
+- **Rule 1:** Zero Vision LLM Hallucination (mandatory deterministic coordinate and text extraction via `AxiomVision`).
+- **Rule 2:** Gate 0 Just-In-Time Language Onboarding (on-demand provisioning across 123+ languages via `ensure_language`).
+- **Rule 3:** Deterministic Tool Routing Hierarchy (`launch_app`, `screenshot_and_ocr`, `inspect_image_ocr`, `inspect_svg`, `deep_atspi_tree`, `atspi_invoke_node`).
+- **Rule 4:** Strict Browser Isolation, Zero-Disk-Write RAM Pipeline, and Localhost Privacy.
+- **Rule 5:** Anti-Silent-Fail Validation (`VISION_ENGINE_FAILED` guard) and Post-Action State Verification.
 
 ---
 

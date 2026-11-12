@@ -878,23 +878,15 @@ fn normalize_ocr_line(raw: &str) -> String {
     let mut s = normalize_bengali_unicode(&digit_fixed);
     // Universal cross-script boundary & CLI token normalizations
     let rules = [
-        ("gofat", "gofmt"),
-        ("goat -7", "gofmt -r"),
-        ("99110 -r", "gofmt -r"),
-        ("gofmt-a7", "gofmt-এর"),
-        ("gofmt-a%", "gofmt-এর"),
-        ("synthesis-a%", "synthesis-এর"),
-        ("V0781", "V078।"),
-        ("08-ভে", "DB-তে"),
-        ("DB-GG", "DB-তে"),
-        ("এক পাসে]", "এক পাসে)।"),
-        ("-- আবার", "— আবার"),
         ("Jopt/", "/opt/"),
         ("Jusr/", "/usr/"),
         ("Jbin/", "/bin/"),
         ("Jtmp/", "/tmp/"),
         ("Jsnap/", "/snap/"),
-        ("Jhermes/", "/hermes/"),
+        ("Jvar/", "/var/"),
+        ("Jetc/", "/etc/"),
+        ("Jhome/", "/home/"),
+        ("Jdev/", "/dev/"),
     ];
     for (pat, rep) in &rules {
         if s.contains(pat) {

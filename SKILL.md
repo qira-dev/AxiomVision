@@ -1,39 +1,49 @@
 ---
 name: axiom-vision
-description: Mandatory skill for controlling or inspecting the desktop UI, launching applications, onboarding the owner's primary OCR language from 123 languages, capturing silent background screenshots, or analyzing PNG/JPG/WebP images and SVG files with zero vision hallucination via AxiomVision on http://127.0.0.1:39200/mcp.
+description: Mandatory skill for deterministic desktop UI inspection, application launching, on-demand 123-language OCR provisioning, silent in-memory window/desktop screenshot analysis, batch image OCR, SVG structural parsing, and direct AT-SPI2 D-Bus automation via AxiomVision on http://127.0.0.1:39200/mcp.
 ---
-# AxiomVision Skill
+# AxiomVision — Deterministic Vision & Desktop Automation Skill
 
-Use the local `AxiomVision` engine (running on `http://127.0.0.1:39200/mcp` or `node ~/.local/share/axiom-vision/mcp-stdio.mjs`) to deterministically launch, inspect, and control desktop applications, windows, screenshots, and SVG files without relying on Vision LLM guessing.
+Use the local `AxiomVision` engine (`http://127.0.0.1:39200/mcp` or `node ~/.local/share/axiom-vision/mcp-stdio.mjs`) to deterministically launch, inspect, and control desktop applications, windows, images, screenshots, and SVG files without relying on Vision LLM guessing.
 
-## Gate 0: Just-In-Time Primary Language Onboarding (123 Languages)
+---
 
-When you connect to `AxiomVision` for the first time on a user's machine:
-1. English (`eng`) is pre-installed by default so the repository stays ultra-lightweight (~37 MB).
-2. Call `ensure_language` with `{"language": "list"}` to inspect currently installed languages.
-3. If only `"eng"` is installed:
-   - If the owner is already speaking to you in a non-English language (e.g., Bengali -> `"ben"`, Japanese -> `"jpn"`, Spanish -> `"spa"`, Arabic -> `"ara"`, Hindi -> `"hin"`, French -> `"fra"`, German -> `"deu"`, Chinese -> `"chi_sim"`, Korean -> `"kor"`, Russian -> `"rus"`, Portuguese -> `"por"`), immediately call `ensure_language` with their 3-letter code to download and register their primary language in 1 second!
-   - Otherwise, ask the owner once: *"Alongside English, which primary language would you like me to enable for screen and image OCR?"* and call `ensure_language` with that language code.
+## 1. Core Operating Principles
 
-## When to Use
+1. **Zero Vision LLM Guessing:** Never estimate pixel coordinates or guess small terminal/UI text using internal Vision LLM capabilities. Always rely on `AxiomVision` tool outputs (`center.x, center.y`, `bbox`, `text`, and `atspi_ground_truth_text`).
+2. **Browser Isolation:** When working inside an IDE with a built-in browser view (Antigravity, ZCode, Cursor), use the IDE's internal browser rather than hijacking the user's host OS browsers (Brave, Chrome, Firefox) unless explicitly requested.
+3. **In-Memory Zero-Disk Pipeline:** For live windows or desktop state, use `screenshot_and_ocr` rather than saving temporary `.png` files to `/tmp`.
 
-- Launching closed desktop applications (`antigravity`, `zcode`, `obsidian`, `brave`, `chrome`, `dolphin`, `vlc`) via `launch_app`.
-- Reading exact text, pixel bounding boxes `(x, y, width, height)`, click centers `(center.x, center.y)`, UI control boxes, and AT-SPI2 ground-truth labels (`atspi_ground_truth_text`).
-- Capturing silent, zero-flash, zero-disk-write in-memory window/desktop screenshots (`screenshot_and_ocr`).
-- Parsing `.svg` files or raw `<svg>` markup via Pure-Rust XML/DOM engine (`inspect_svg`).
-- Registering on-demand languages from the 123+ fast quantized models (`ensure_language`).
+---
 
-## Steps
+## 2. Gate 0: Just-In-Time Language Onboarding (123+ Languages)
 
-1. Verify `AxiomVision` is running on port `39200`:
-   ```bash
-   axiomvision status || axiomvision up
-   ```
+On a fresh clone, only English (`eng`) is pre-installed so the repository stays lightweight (~40 MB).
+1. Call `ensure_language` with `{"language": "list"}` to inspect currently installed OCR models.
+2. If the user's conversation or target screen uses another language (e.g., Bengali `"ben"`, Japanese `"jpn"`, Spanish `"spa"`, Arabic `"ara"`, Hindi `"hin"`, French `"fra"`, German `"deu"`, Simplified Chinese `"chi_sim"`, Korean `"kor"`, Russian `"rus"`, Portuguese `"por"`):
+   - Immediately call `ensure_language({"language": "<3-letter-code>"})`.
+   - The quantized fast model (~1–2 MB) downloads and activates in under 1 second with zero daemon restart required.
 
-2. Select the appropriate tool from the 27 available tools:
-   - **On-Demand Language (Gate 0)**: `ensure_language` with `{"language": "list"}` or `{"language": "<3-letter-code>"}`.
-   - **Launch App**: `launch_app` with `{"app": "zcode"}` or `{"app": "antigravity"}`.
-   - **Live OCR + Ground-Truth**: `screenshot_and_ocr` with `{"window_id": <id>}` or `{}`.
-   - **Deterministic SVG**: `inspect_svg` with `{"file_path_or_xml": "<path_or_xml>"}`.
-   - **Image File OCR**: `inspect_image_ocr` or `find_text_in_image`.
-   - **No-Mouse Actions**: `deep_atspi_tree` and `atspi_invoke_node`.
+---
+
+## 3. Tool Selection & Parameter Reference (27 Tools)
+
+| Task | Tool Name | Key Parameters & Usage Notes |
+| :--- | :--- | :--- |
+| **Check / Add OCR Language** | `ensure_language` | `{"language": "list"}` or `{"language": "ben"}` (supports 123+ ISO 639-2 codes or `"all"`). |
+| **Launch or Focus App** | `launch_app` | `{"app": "zcode"}` (or `"antigravity"`, `"obsidian"`, `"dolphin"`, `"vlc"`). Injects Wayland/XWayland/D-Bus & accessibility flags, waits for rendered window, and reuses existing window if already open. |
+| **Live Window / Screen OCR + OS Truth Fusion** | `screenshot_and_ocr` | `{"window_id": 12345}` (or `{}` for full screen, or `{"app_id": "zcode"}`). Runs 100% in RAM, applies 3x3 Laplacian Unsharp Mask, and fuses live 28-level `AT-SPI2` OS labels (`atspi_ground_truth_text`, `atspi_node_path`). |
+| **Single or Batch Image File OCR** | `inspect_image_ocr` | Single file: `{"file_path": "/abs/path.png"}`. Batch mode: `{"file_paths": ["/path/1.png", "/path/2.png"]}`. Pass `"detect_ui_boxes": false` for text-only tasks to minimize payload size. |
+| **Locate Specific String in Image** | `find_text_in_image` | `{"file_path": "/abs/path.png", "query_text": "Submit"}` -> returns matching blocks with exact `(center.x, center.y)` click coordinates. |
+| **Parse SVG File or Markup** | `inspect_svg` | `{"file_path_or_xml": "/path/file.svg"}` (or raw `<svg>...</svg>` string) -> Pure-Rust XML/DOM parser returning `viewBox`, `<text>` nodes, shapes, and exact `bbox`/`center`. |
+| **Walk Live Accessibility Tree** | `deep_atspi_tree` | `{"app_query": "zcode", "max_depth": 28, "interactive_only": true}` -> returns structured OS accessibility nodes with `node_path`, `role`, `name`, `actions`, and `bounds`. |
+| **Direct No-Mouse D-Bus Action** | `atspi_invoke_node` | `{"node_path": "16/0/0/2"}` (or `{"node_path": "...", "set_text": "hello"}`) -> clicks buttons or populates inputs directly over D-Bus without moving the physical mouse cursor. |
+| **Window Discovery & Management** | `list_windows`, `focused_window`, `activate_window`, `move_window`, `resize_window` | Discover `window_id`, `pid`, `app_id`, `title`, and `bounds`, or focus/reposition windows via the GNOME Shell Wayland extension. |
+| **Pointer & Keyboard Input** | `click`, `perform_action`, `set_value`, `type_text`, `press_key`, `scroll`, `drag` | Execute bounded desktop input using exact `(x, y)` coordinates or semantic selectors. |
+
+---
+
+## 4. Verification & Error Handling
+
+1. **Check `ok` and `isError`:** Always verify `ok: true` and `isError: false` before using tool output. If an image is unreadable or fails validation, `inspect_image_ocr` returns `ok: false, error_code: "VISION_ENGINE_FAILED", isError: true`.
+2. **Verify State After Actions:** After calling `click`, `atspi_invoke_node`, `type_text`, or `launch_app`, confirm the resulting UI transition via `screenshot_and_ocr` or `deep_atspi_tree`.
