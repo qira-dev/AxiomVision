@@ -983,7 +983,11 @@ fn run_tesseract_tsv_region(
     let mut blocks = Vec::new();
     for (_key, (mut words, mut confs, x1, y1, x2, y2)) in lines_map {
         // Strip leading low-confidence icon-glyph noise (e.g. "sa", "89", "f" misread from a 16px sidebar icon)
-        if words.len() >= 2 && confs[0] < 46.0 && confs[1] >= 65.0 && words[0].chars().count() <= 3 {
+        let is_list_marker = words.first().map(|w| {
+            let s = w.as_str();
+            s.ends_with('.') || s.ends_with(')') || s == "-" || s == "•"
+        }).unwrap_or(false);
+        if words.len() >= 2 && !is_list_marker && confs[0] < 46.0 && confs[1] >= 65.0 && words[0].chars().count() <= 3 {
             words.remove(0);
             confs.remove(0);
         }
@@ -1251,81 +1255,53 @@ pub fn inspect_image_rust(
     let mut ocr_blocks: Vec<OcrBlock> = Vec::new();
 
     if run_ocr {
-        let base_scale = if is_stdin {
-            if w <= 1024 { 1.45 } else if w <= 1440 { 1.24 } else { 1.12 }
-        } else {
-            if w <= 1024 { 1.68 } else if w <= 1440 { 1.42 } else { 1.22 }
-        };
+        let base_scale = if w <= 1024 { 1.68 } else if w <= 1440 { 1.42 } else { 1.22 };
 
         let left_w = ((w as f64) * 0.58).round() as usize;
         let right_x = ((w as f64) * 0.22).round() as usize;
         let right_w = w.saturating_sub(right_x);
         let g_normal = if is_dark_mode { 0.58 } else { 1.0 };
 
-        let prepared: Vec<(usize, i32, i32, f64, Vec<u8>, &'static str, &'static str)> = if is_stdin {
-            // Fast 2-Core Live Window Mode (paired with live AT-SPI2 Ground-Truth Fusion):
-            // Never uses more than 2 CPU cores on the 4-core i5-6500, leaving 2 cores 100% free for desktop UI & IDE.
-            vec![
-                (
-                    0,
-                    0,
-                    0,
-                    base_scale,
-                    preprocess_crop_to_pgm(gray, w, h, 0, 0, w, h, base_scale, is_dark_mode, g_normal),
-                    "ben+eng",
-                    "11",
-                ),
-                (
-                    1,
-                    0,
-                    0,
-                    base_scale,
-                    preprocess_crop_to_pgm(gray, w, h, 0, 0, w, h, base_scale, is_dark_mode, 1.0),
-                    "ben+eng",
-                    "6",
-                ),
-            ]
-        } else {
-            // Full 4-Pass Static Image Mode executed in 2-Core Waves (max 2 concurrent threads at any instant)
-            vec![
-                (
-                    0,
-                    0,
-                    0,
-                    base_scale,
-                    preprocess_crop_to_pgm(gray, w, h, 0, 0, w, h, base_scale, is_dark_mode, g_normal),
-                    "ben+eng",
-                    "11",
-                ),
-                (
-                    1,
-                    0,
-                    0,
-                    base_scale * 1.04,
-                    preprocess_crop_to_pgm(gray, w, h, 0, 0, left_w.min(w), h, base_scale * 1.04, is_dark_mode, 1.0),
-                    "ben+eng",
-                    "6",
-                ),
-                (
-                    2,
-                    right_x as i32,
-                    0,
-                    base_scale * 1.04,
-                    preprocess_crop_to_pgm(gray, w, h, right_x, 0, right_w.min(w), h, base_scale * 1.04, is_dark_mode, g_normal),
-                    "ben+eng",
-                    "6",
-                ),
-                (
-                    3,
-                    0,
-                    0,
-                    base_scale * 1.06,
-                    preprocess_crop_adaptive_to_pgm(gray, w, h, 0, 0, w, h, base_scale * 1.06),
-                    "eng",
-                    "11",
-                ),
-            ]
-        };
+        // Full 4-Pass Engine for both live in-memory screenshots and static images,
+        // executed in 2-Core Waves (max 2 concurrent threads at nice -n 15 so 2 CPU cores are always free).
+        let prepared: Vec<(usize, i32, i32, f64, Vec<u8>, &'static str, &'static str)> = vec![
+            (
+                0,
+                0,
+                0,
+                base_scale,
+                preprocess_crop_to_pgm(gray, w, h, 0, 0, w, h, base_scale, is_dark_mode, g_normal),
+                "ben+eng",
+                "11",
+            ),
+            (
+                1,
+                0,
+                0,
+                base_scale * 1.04,
+                preprocess_crop_to_pgm(gray, w, h, 0, 0, left_w.min(w), h, base_scale * 1.04, is_dark_mode, 1.0),
+                "ben+eng",
+                "6",
+            ),
+            (
+                2,
+                right_x as i32,
+                0,
+                base_scale * 1.04,
+                preprocess_crop_to_pgm(gray, w, h, right_x, 0, right_w.min(w), h, base_scale * 1.04, is_dark_mode, g_normal),
+                "ben+eng",
+                "6",
+            ),
+            (
+                3,
+                0,
+                0,
+                base_scale * 1.06,
+                preprocess_crop_adaptive_to_pgm(gray, w, h, 0, 0, w, h, base_scale * 1.06),
+                "eng",
+                "11",
+            ),
+        ];
 
         // Execute in waves of at most 2 concurrent worker threads so 2 CPU cores are ALWAYS free
         let mut iter = prepared.into_iter();
@@ -1365,8 +1341,8 @@ pub fn inspect_image_rust(
                 let dx = (b.center.x - d.center.x).abs();
 
                 if overlap >= 0.55 || (dy <= 12 && dx <= 28) {
-                    let b_bn = b.text.chars().filter(|&c| is_bengali_letter(c)).count() >= 3 && b.confidence >= 0.70;
-                    let d_bn = d.text.chars().filter(|&c| is_bengali_letter(c)).count() >= 3 && d.confidence >= 0.70;
+                    let b_bn = b.text.chars().any(is_bengali_letter) && b.confidence >= 0.60;
+                    let d_bn = d.text.chars().any(is_bengali_letter) && d.confidence >= 0.60;
                     if b_bn && !d_bn {
                         *d = b.clone();
                         replaced = true;
@@ -1382,10 +1358,21 @@ pub fn inspect_image_rust(
                         dup = true;
                         break;
                     } else if b.text.contains(&d.text) && b.text.len() > d.text.len() {
+                        let char_diff = b.text.chars().count().saturating_sub(d.text.chars().count());
+                        if char_diff <= 3 && d.confidence > b.confidence + 0.15 && d.text.chars().count() >= 4 {
+                            dup = true;
+                            break;
+                        }
                         *d = b.clone();
                         replaced = true;
                         break;
                     } else if d.text.contains(&b.text) {
+                        let char_diff = d.text.chars().count().saturating_sub(b.text.chars().count());
+                        if char_diff <= 3 && b.confidence > d.confidence + 0.15 && b.text.chars().count() >= 4 {
+                            *d = b.clone();
+                            replaced = true;
+                            break;
+                        }
                         dup = true;
                         break;
                     } else if overlap >= 0.70 {
